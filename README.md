@@ -1,2 +1,3 @@
-# tropical-dsl
-DSL for validating simple parameters
+# Tropical
+
+Fluent parameter parsing
