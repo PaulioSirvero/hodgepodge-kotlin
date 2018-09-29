@@ -1,8 +1,6 @@
-package paulio.tropical
+package paulio.hodgepodge
 
 import java.lang.Exception
-import kotlin.math.max
-import kotlin.math.min
 
 
 fun main(args: Array<String>) {
