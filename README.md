@@ -1,3 +1,3 @@
-# scratch-kotlin
+# Kotlin Cookies
 
-Medley of generic and reusable components as well as a space for developing new ones 
+Collection of reusable functions and classes designed to be copied and pasted
