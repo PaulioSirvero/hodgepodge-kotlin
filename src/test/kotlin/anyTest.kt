@@ -246,7 +246,7 @@ class AnyTest {
     assertEquals("abc", actual)
   }
 
-  val phrase = """
+  private val phrase = """
     The more that you read
     the more things you will know
     the more that you learn
@@ -256,55 +256,151 @@ class AnyTest {
   fun expectedResult(delim: String) = "The more that you read${delim}the more things you will know${delim}the more that you learn${delim}the more places you’ll go"
 
   @Test
-  fun lineUp___1() {
+  fun String_lineUp___1() {
     val actual = phrase.lineUp("")
     assertEquals(expectedResult(""), actual)
   }
 
   @Test
-  fun lineUp___2() {
+  fun String_lineUp___2() {
     val actual = phrase.lineUp(",")
     assertFalse(actual.matches("^\\s.*".toRegex()))
     assertFalse(actual.matches(".*\\s$".toRegex()))
   }
 
   @Test
-  fun lineUp___3() {
+  fun String_lineUp___3() {
     val actual = phrase.lineUp(",")
     val containsNewLines = actual.contains("\n")
     assertFalse(containsNewLines)
   }
 
   @Test
-  fun lineUp___4() {
+  fun String_lineUp___4() {
     val actual = phrase.lineUp(",")
     val containsCommas = actual.contains(",")
     assertTrue(containsCommas)
   }
 
   @Test
-  fun lineUp___5() {
+  fun String_lineUp___5() {
     val expected = expectedResult(",")
     val actual = phrase.lineUp(",")
     assertEquals(expected, actual)
   }
 
   @Test
-  fun lineUp___6() {
+  fun String_lineUp___6() {
     val expected = expectedResult("\t")
     val actual = phrase.lineUp("\t")
     assertEquals(expected, actual)
   }
 
   @Test
-  fun lineUp___7() {
+  fun String_lineUp___7() {
     val actual = "".lineUp(",")
     assertEquals("", actual)
   }
 
   @Test
-  fun lineUp___8() {
+  fun String_lineUp___8() {
     val actual = "  \t\n   \t \t\n   ".lineUp(",")
     assertEquals("", actual)
+  }
+
+  @Test
+  fun List_String_stripBlanks___1() {
+    val input = listOf("abc", "", "efg")
+    val expected = listOf("abc", "efg")
+    val actual = input.stripBlanks()
+    assertEquals(expected, actual)
+  }
+
+  @Test
+  fun List_String_stripBlanks___2() {
+    val input = listOf("", "abc", "\n", "efg", "\t")
+    val expected = listOf("abc", "efg")
+    val actual = input.stripBlanks()
+    assertEquals(expected, actual)
+  }
+
+  @Test
+  fun List_String_stripBlanks___3() {
+    val input = listOf("abc", "efg")
+    val expected = listOf("abc", "efg")
+    val actual = input.stripBlanks()
+    assertEquals(expected, actual)
+  }
+
+  @Test
+  fun List_String_trimBlanks___1() {
+    val input = listOf("", "abc", "efg", "")
+    val expected = listOf("abc", "efg")
+    val actual = input.trimBlanks()
+    assertEquals(expected, actual)
+  }
+
+  @Test
+  fun List_String_trimBlanks___2() {
+    val input = listOf("abc", "", "efg")
+    val expected = listOf("abc", "", "efg")
+    val actual = input.trimBlanks()
+    assertEquals(expected, actual)
+  }
+
+  @Test
+  fun List_String_trimBlanks___3() {
+    val input = listOf("   \t \t \r", "abc", "\n", "efg", "\r\n\r\n")
+    val expected = listOf("abc", "\n", "efg")
+    val actual = input.trimBlanks()
+    assertEquals(expected, actual)
+  }
+
+  @Test
+  fun List_String_trimStart___1() {
+    val input = listOf("", "abc", "efg")
+    val expected = listOf("abc", "efg")
+    val actual = input.trimStart()
+    assertEquals(expected, actual)
+  }
+
+  @Test
+  fun List_String_trimStart___2() {
+    val input = listOf("abc", "efg", "")
+    val expected = listOf("abc", "efg", "")
+    val actual = input.trimStart()
+    assertEquals(expected, actual)
+  }
+
+  @Test
+  fun List_String_trimStart___3() {
+    val input = listOf("", "abc", "", "efg")
+    val expected = listOf("abc", "", "efg")
+    val actual = input.trimStart()
+    assertEquals(expected, actual)
+  }
+
+  @Test
+  fun List_String_trimEnd___1() {
+    val input = listOf("abc", "efg", "")
+    val expected = listOf("abc", "efg")
+    val actual = input.trimEnd()
+    assertEquals(expected, actual)
+  }
+
+  @Test
+  fun List_String_trimEnd___2() {
+    val input = listOf("", "abc", "efg")
+    val expected = listOf("", "abc", "efg")
+    val actual = input.trimEnd()
+    assertEquals(expected, actual)
+  }
+
+  @Test
+  fun List_String_trimEnd___3() {
+    val input = listOf("abc", "", "efg", "")
+    val expected = listOf("abc", "", "efg")
+    val actual = input.trimEnd()
+    assertEquals(expected, actual)
   }
 }

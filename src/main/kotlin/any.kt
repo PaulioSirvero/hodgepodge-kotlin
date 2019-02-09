@@ -133,21 +133,25 @@ fun String.lineUp(delim: String = " "): String  = when {
     .joinToString(delim)
 }
 
-/** Removes empty lines from a list of strings */
-fun List<String>.strip(): List<String>
-  = filterNot { it.isBlank() }
+/******************************************************************************
+ * Removes empty lines from a list of strings
+ *****************************************************************************/
+fun List<String>.stripBlanks(): List<String> = filterNot { it.isBlank() }
 
-/** Removes empty lines from the start and end of a list of strings */
-fun List<String>.trim(): List<String>
-  = trimStart().trimEnd()
+/******************************************************************************
+ * Removes empty lines from the start and end of a list of strings
+ *****************************************************************************/
+fun List<String>.trimBlanks(): List<String> = trimStart().trimEnd()
 
-/** Removes empty lines from the start of a list of strings */
-fun List<String>.trimStart(): List<String>
-  = dropWhile { it.isBlank() }
+/******************************************************************************
+ * Removes empty lines from the start of a list of strings
+ *****************************************************************************/
+fun List<String>.trimStart(): List<String> = dropWhile { it.isBlank() }
 
-/** Removes empty lines from the end of a list of strings */
-fun List<String>.trimEnd(): List<String>
-  = dropLastWhile { it.isBlank() }
+/******************************************************************************
+ * Removes empty lines from the end of a list of strings
+ *****************************************************************************/
+fun List<String>.trimEnd(): List<String> = dropLastWhile { it.isBlank() }
 
 /**
  * Returns the index of the first string to match the
