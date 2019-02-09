@@ -161,6 +161,55 @@ class AnyTest {
     assertNull(n)
   }
 
+  @Test
+  fun String_substring___Regex___1() {
+    val actual = "a\tbcd".substring("\\s+bc".toRegex())
+    assertNotNull<Any>(actual)
+    assertEquals("\tbc", actual)
+  }
+
+  @Test
+  fun String_substring___Regex___2() {
+    val actual = "abcd".substring("\\s+bc".toRegex())
+    assertNull(actual)
+  }
+
+  @Test
+  fun String_substring___Regex___3() {
+    val input = "The timestamp is 2019-02-09T12:01:00."
+    val actual = input.substring("[0-9]{4}-[0-1][0-9]-[0-3][0-9]".toRegex())
+    assertNotNull<Any>(actual)
+    assertEquals("2019-02-09", actual)
+  }
+
+  @Test
+  fun String_substring___Regex_Int___1() {
+    val actual = "abcd".substring("a(bc)d".toRegex(), 1)
+    assertNotNull<Any>(actual)
+    assertEquals("bc", actual)
+  }
+
+  @Test
+  fun String_substring___Regex_Int___2() {
+    val actual = "abcdefghijk".substring("b(cd(efg)hi)j".toRegex(), 2)
+    assertNotNull<Any>(actual)
+    assertEquals("efg", actual)
+  }
+
+  @Test
+  fun String_substring___Regex_Int___3() {
+    val actual = "abcdefghijk".substring("xyz".toRegex())
+    assertNull(actual)
+  }
+
+  @Test
+  fun String_substring___Regex_Int___4() {
+    val input = "The timestamp is 2019-02-09T12:01:00."
+    val actual = input.substring("([0-9]{4})-([0-1][0-9])-([0-3][0-9])".toRegex(), 3)
+    assertNotNull<Any>(actual)
+    assertEquals("09", actual)
+  }
+
   val phrase = """
     The more that you read
     the more things you will know

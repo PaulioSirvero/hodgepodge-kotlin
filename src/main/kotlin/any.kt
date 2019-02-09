@@ -77,52 +77,20 @@ infix fun String.bifurcate(regex: Regex): Pair<String, String?> = let {
   }
 }
 
-/**
- * Splits a string into three on the first two occurrence
- * of the specified delimiter. If only one match is found the
- * triples first member will contain the first part, second
- * member will contain the remainder and third contain null.
- * If no match is found the first will contain the whole
- * string and the others will contain null
- *
- * @param[delim] Delimiter to split on
- */
-infix fun String.trifurcate(delim: String): Triple<String, String?, String?> = let {
-  split(delim, limit = 3).let { p ->
-    Triple(p[0], p.getOrNull(1), p.getOrNull(2))
-  }
-}
-
-/**
- * Splits a string into three on the first two occurrence
- * of the specified regex. If only one match is found the
- * triples first member will contain the first part, second
- * member will contain the remainder and third contain null.
- * If no match is found the first will contain the whole
- * string and the others will contain null
- *
- * @param[regex] Regular expression to split on
- */
-infix fun String.trifurcate(regex: Regex): Triple<String, String?, String?> = let {
-  split(regex, 3).let { p ->
-    Triple(p[0], p.getOrNull(1), p.getOrNull(2))
-  }
-}
-
-/**
+/******************************************************************************
  * Returns the substring that matches the regular expression
  *
  * @param[regex] Regex to match
- */
-fun String.substring(regex: Regex): String?
-  = substring(regex, 0)
+ *****************************************************************************/
+fun String.substring(regex: Regex): String? = substring(regex, 0)
 
-/**
- * Returns the first substring that matches the group
- * found by the regular expression
+/******************************************************************************
+ * Returns the first substring that matches the group found by the regular
+ * expression or null if no match was found
  *
  * @param[regex] Regex to match
- */
+ * @param[group] Number of the group to find
+ *****************************************************************************/
 fun String.substring(regex: Regex, group: Int): String? {
   val m = regex.find(this)
   return m?.groups?.get(group)?.value
