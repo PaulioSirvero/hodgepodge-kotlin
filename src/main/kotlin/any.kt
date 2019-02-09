@@ -61,7 +61,7 @@ fun Boolean.toYesOrNo(lowercase: Boolean = false): String = when {
  *
  * @param[delim] Delimiter to split on
  *****************************************************************************/
-infix fun String.bifurcate(delim: String): Pair<String, String?>
+fun String.bifurcate(delim: String): Pair<String, String?>
   = bifurcate(Regex.fromLiteral(delim))
 
 /******************************************************************************
@@ -71,7 +71,7 @@ infix fun String.bifurcate(delim: String): Pair<String, String?>
  *
  * @param[regex] Regular expression to split on
  *****************************************************************************/
-infix fun String.bifurcate(regex: Regex): Pair<String, String?> = let {
+fun String.bifurcate(regex: Regex): Pair<String, String?> = let {
   split(regex, 2).let { p ->
     Pair(p[0], p.getOrNull(1))
   }
@@ -96,40 +96,38 @@ fun String.substring(regex: Regex, group: Int): String? {
   return m?.groups?.get(group)?.value
 }
 
-/**
- * Prepends a prefix to the string only if it does
- * not already have it
+/******************************************************************************
+ * Prepends a prefix string to this string but only if the prefix is not
+ * already present
  *
- * @param[prefix] Prefix to lead with
- */
-infix fun String.leadWithPrefix(prefix: String): String = when {
+ * @param[prefix] String to prefix
+ *****************************************************************************/
+fun String.prefix(prefix: String): String = when {
   this.startsWith(prefix) -> this
   else -> prefix.plus(this)
 }
 
-/**
- * Appends a suffix to the string only if it does
- * not already have it
+/******************************************************************************
+ * Appends a suffix to the string only if it does not already have it
  *
  * @param[suffix] Suffix to lead with
- */
-infix fun String.endWithSuffix(suffix: String): String = when {
+ *****************************************************************************/
+fun String.suffix(suffix: String): String = when {
   this.endsWith(suffix) -> this
-  else -> suffix.plus(this)
+  else -> this.plus(suffix)
 }
 
-/**
- * First removes leading and trailing whitespace the replaces line
- * breaks (including their leading and trailing whitespace) with the
- * supplied delimiter so that the string forms a single line. By default
- * a space is used as the separator
+/******************************************************************************
+ * First removes leading and trailing whitespace the replaces line breaks
+ * (including their leading and trailing whitespace) with the supplied
+ * delimiter so that the string forms a single line. By default a space is
+ * used as the separator
  *
  * @param[delim] Delimiter to replace with
- */
-fun String.lineUp(delim: String = " "): String {
-  delim.assertNotEmpty("Delimiter is empty")
-  if(this.isBlank()) return ""
-  return this.split("\n")
+ *****************************************************************************/
+fun String.lineUp(delim: String = " "): String  = when {
+  isBlank() -> ""
+  else -> split("\n")
     .filter { it.isNotBlank() }
     .map { it.trim() }
     .joinToString(delim)

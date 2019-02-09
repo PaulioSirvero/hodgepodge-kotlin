@@ -210,6 +210,42 @@ class AnyTest {
     assertEquals("09", actual)
   }
 
+  @Test
+  fun String_prefix___1() {
+    val actual = "abc/".prefix("/")
+    assertEquals("/abc/", actual)
+  }
+
+  @Test
+  fun String_prefix___2() {
+    val actual = "/abc/".prefix("/")
+    assertEquals("/abc/", actual)
+  }
+
+  @Test
+  fun String_prefix___3() {
+    val actual = "abc".prefix("")
+    assertEquals("abc", actual)
+  }
+
+  @Test
+  fun String_suffix___1() {
+    val actual = "/abc".suffix("/")
+    assertEquals("/abc/", actual)
+  }
+
+  @Test
+  fun String_suffix___2() {
+    val actual = "/abc/".suffix("/")
+    assertEquals("/abc/", actual)
+  }
+
+  @Test
+  fun String_suffix___3() {
+    val actual = "abc".suffix("")
+    assertEquals("abc", actual)
+  }
+
   val phrase = """
     The more that you read
     the more things you will know
@@ -220,58 +256,55 @@ class AnyTest {
   fun expectedResult(delim: String) = "The more that you read${delim}the more things you will know${delim}the more that you learn${delim}the more places you’ll go"
 
   @Test
-  fun lineUp_emptyDelim_throwsException() {
-    assertFails {
-      phrase.lineUp("")
-    }
+  fun lineUp___1() {
+    val actual = phrase.lineUp("")
+    assertEquals(expectedResult(""), actual)
   }
 
   @Test
-  fun lineUp_commaDelim_removesLeadingAndTrailingWhitespace() {
+  fun lineUp___2() {
     val actual = phrase.lineUp(",")
     assertFalse(actual.matches("^\\s.*".toRegex()))
     assertFalse(actual.matches(".*\\s$".toRegex()))
   }
 
   @Test
-  fun lineUp_commaDelim_returnsStringWithNoLineBreaks() {
+  fun lineUp___3() {
     val actual = phrase.lineUp(",")
     val containsNewLines = actual.contains("\n")
     assertFalse(containsNewLines)
   }
 
   @Test
-  fun lineUp_commaDelim_returnsStringWithCommas() {
+  fun lineUp___4() {
     val actual = phrase.lineUp(",")
     val containsCommas = actual.contains(",")
     assertTrue(containsCommas)
   }
 
   @Test
-  fun lineUp_commaDelim_returnsExpectedOneLineSentence() {
+  fun lineUp___5() {
     val expected = expectedResult(",")
     val actual = phrase.lineUp(",")
     assertEquals(expected, actual)
   }
 
   @Test
-  fun lineUp_tabDelim_returnsExpectedOneLineSentence() {
+  fun lineUp___6() {
     val expected = expectedResult("\t")
     val actual = phrase.lineUp("\t")
     assertEquals(expected, actual)
   }
 
   @Test
-  fun lineUp_emptyPhrase_returnsEmptyString() {
-    val expected = ""
+  fun lineUp___7() {
     val actual = "".lineUp(",")
-    assertEquals(expected, actual)
+    assertEquals("", actual)
   }
 
   @Test
-  fun lineUp_blankPhrase_returnsEmptyString() {
-    val expected = ""
+  fun lineUp___8() {
     val actual = "  \t\n   \t \t\n   ".lineUp(",")
-    assertEquals(expected, actual)
+    assertEquals("", actual)
   }
 }
