@@ -1,5 +1,8 @@
 import java.util.*
 
+// TODO: Needs overhaul with rewritten tests
+// TODO: There is a couple of bugs
+
 /** Substitutes parameters within a string  */
 @FunctionalInterface
 interface Substitutor {

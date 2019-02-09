@@ -6,26 +6,35 @@ import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import java.util.*
 
-/**
+/******************************************************************************
  * Returns the negated result of the function passed
  *
  * @param[f] Function that produces a boolean to negate
- */
+ *****************************************************************************/
 inline fun not(f: () -> Boolean): Boolean = f().not()
 
-/** Returns true if the collection contains a single item */
+/******************************************************************************
+ * Returns true if the collection contains a single item
+ *****************************************************************************/
 fun <T> Collection<T>.isSingleton(): Boolean = size == 1
 
-/** Returns the value wrapped in an Optional */
+/******************************************************************************
+ * Returns the value wrapped in an Optional
+ *****************************************************************************/
 fun <T> T?.toOptional(): Optional<T> = Optional.ofNullable(this)
 
-/** Returns true if the trimmed string matches 'Y' or 'YES' (case insensitive) */
-fun String.toBool(): Boolean = this.trim().matches("([Yy])|([Yy][Ee][Ss])".toRegex())
+/******************************************************************************
+ * Returns true if the trimmed string matches 'Y' or 'YES' (case insensitive)
+ *****************************************************************************/
+fun String.toBool(): Boolean = this.trim().matches(
+  "([Yy])|([Yy][Ee][Ss])".toRegex()
+)
 
-/**
- * Returns the string representation of the boolean in the form
- * 'Y' or 'N'
- */
+/******************************************************************************
+ * Returns the string representation of the boolean in the form 'Y' or 'N'
+ *
+ * @param[lowercase] True if the resultant string should be in lowercase
+ *****************************************************************************/
 fun Boolean.toYorN(lowercase: Boolean = false): String = when {
   lowercase && this -> "y"
   lowercase && !this -> "n"
@@ -33,10 +42,11 @@ fun Boolean.toYorN(lowercase: Boolean = false): String = when {
   else -> "N"
 }
 
-/**
- * Returns the string representation of the boolean in the form
- * 'YES' or 'NO'
- */
+/******************************************************************************
+ * Returns the string representation of the boolean in the form 'YES' or 'NO'
+ *
+ * @param[lowercase] True if the resultant string should be in lowercase
+ *****************************************************************************/
 fun Boolean.toYesOrNo(lowercase: Boolean = false): String = when {
   lowercase && this -> "yes"
   lowercase && !this -> "no"
@@ -44,28 +54,23 @@ fun Boolean.toYesOrNo(lowercase: Boolean = false): String = when {
   else -> "NO"
 }
 
-/**
- * Splits a string into two on the first occurrence of the
- * specified delimiter. If no match is found the pairs first
- * will contain the whole string and the second will
- * contain null
+/******************************************************************************
+ * Splits a string into two on the first occurrence of the specified delimiter.
+ * If no match is found the pairs first will contain the whole string and the
+ * second will contain null
  *
  * @param[delim] Delimiter to split on
- */
-infix fun String.bifurcate(delim: String): Pair<String, String?> = let {
-  split(delim, limit = 2).let { p ->
-    Pair(p[0], p.getOrNull(1))
-  }
-}
+ *****************************************************************************/
+infix fun String.bifurcate(delim: String): Pair<String, String?>
+  = bifurcate(Regex.fromLiteral(delim))
 
-/**
- * Splits a string into two on the first occurrence of the
- * specified regex. If no match is found the pairs first
- * will contain the whole string and the second will
- * contain null
+/******************************************************************************
+ * Splits a string into two on the first occurrence of the specified regex. If
+ * no match is found the pairs first will contain the whole string and the
+ * second will contain null
  *
  * @param[regex] Regular expression to split on
- */
+ *****************************************************************************/
 infix fun String.bifurcate(regex: Regex): Pair<String, String?> = let {
   split(regex, 2).let { p ->
     Pair(p[0], p.getOrNull(1))

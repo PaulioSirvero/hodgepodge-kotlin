@@ -1,13 +1,32 @@
 import org.junit.jupiter.api.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFails
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
+import kotlin.test.*
 
 class AnyTest {
 
+  // TODO: Split these tests into different test files but leave 'any.kt'
+  // TODO: as a monofile so it's easy to do editor searches
+
   @Test
-  fun String_toBool__y_or_yes__returnsTrue() {
+  fun not___1() {
+    assertFalse( not { true } )
+    assertTrue( not { false } )
+  }
+
+  @Test
+  fun Collection_isSingleton___1() {
+    assertFalse( listOf<Any>().isSingleton() )
+    assertFalse( listOf<Any>(1,2,3).isSingleton() )
+    assertTrue( listOf<Any>(1).isSingleton() )
+  }
+
+  @Test
+  fun Any_toOptional___1() {
+    assertFalse( null.toOptional().isPresent )
+    assertTrue( "".toOptional().isPresent )
+  }
+
+  @Test
+  fun String_toBool___1() {
     assertTrue("y".toBool())
     assertTrue("Y".toBool())
     assertTrue("yes".toBool())
@@ -17,7 +36,7 @@ class AnyTest {
   }
 
   @Test
-  fun String_toBool__not_y_or_yes__returnsTrue() {
+  fun String_toBool___2() {
     assertFalse("n".toBool())
     assertFalse("N".toBool())
     assertFalse("no".toBool())
@@ -30,6 +49,116 @@ class AnyTest {
     assertFalse("2134fd\n\t23sdff".toBool())
     assertFalse("yesyes".toBool())
     assertFalse("yy".toBool())
+  }
+
+  @Test
+  fun Boolean_toYesOrNo___1() {
+    assertEquals("YES", true.toYesOrNo())
+    assertEquals("yes", true.toYesOrNo(true))
+    assertEquals("NO", false.toYesOrNo())
+    assertEquals("no", false.toYesOrNo(true))
+  }
+
+  @Test
+  fun Boolean_toYorN___1() {
+    assertEquals("Y", true.toYorN())
+    assertEquals("y", true.toYorN(true))
+    assertEquals("N", false.toYorN())
+    assertEquals("n", false.toYorN(true))
+  }
+
+  @Test
+  fun String_bifurcate___String___1() {
+    val (a, b) = "a,b".bifurcate(",")
+    assertEquals("a", a)
+    assertNotNull<Any>(b)
+    assertEquals("b", b)
+  }
+
+  @Test
+  fun String_bifurcate___String___2() {
+    val (a, b) = "a,".bifurcate(",")
+    assertEquals("a", a)
+    assertNotNull<Any>(b)
+    assertEquals("", b)
+  }
+
+  @Test
+  fun String_bifurcate___String___3() {
+    val (a, b) = ",b".bifurcate(",")
+    assertEquals("", a)
+    assertNotNull<Any>(b)
+    assertEquals("b", b)
+  }
+
+  @Test
+  fun String_bifurcate___String___4() {
+    val (a, bc) = "a,bc".bifurcate(",")
+    assertEquals("a", a)
+    assertNotNull<Any>(bc)
+    assertEquals("bc", bc)
+  }
+
+  @Test
+  fun String_bifurcate___String___5() {
+    val (a, bc) = "a,b,c".bifurcate(",")
+    assertEquals("a", a)
+    assertNotNull<Any>(bc)
+    assertEquals("b,c", bc)
+  }
+
+  @Test
+  fun String_bifurcate___String___6() {
+    val (ab, n) = "ab".bifurcate(",")
+    assertEquals("ab", ab)
+    assertNull(n)
+  }
+
+  @Test
+  fun String_bifurcate___Regex___1() {
+    val (a, b) = "a  ,  b".bifurcate("\\s*,\\s*".toRegex())
+    assertEquals("a", a)
+    assertNotNull<Any>(b)
+    assertEquals("b", b)
+  }
+
+  @Test
+  fun String_bifurcate___Regex___2() {
+    val (a, b) = "a ".bifurcate("\\s".toRegex())
+    assertEquals("a", a)
+    assertNotNull<Any>(b)
+    assertEquals("", b)
+  }
+
+  @Test
+  fun String_bifurcate___Regex___3() {
+    val (a, b) = " b".bifurcate("\\s".toRegex())
+    assertEquals("", a)
+    assertNotNull<Any>(b)
+    assertEquals("b", b)
+  }
+
+  @Test
+  fun String_bifurcate___Regex___4() {
+    val (a, bc) = "a[delim]bc".bifurcate("\\[.*]".toRegex())
+    assertEquals("a", a)
+    assertNotNull<Any>(bc)
+    assertEquals("bc", bc)
+  }
+
+  @Test
+  fun String_bifurcate___Regex___5() {
+    val (a, bc) = "a b c".bifurcate(" ".toRegex())
+    assertEquals("a", a)
+    assertNotNull<Any>(bc)
+    assertEquals("b c", bc)
+  }
+
+  @Test
+  fun String_bifurcate___Regex___6() {
+    val (ab, n) = "ab".bifurcate("\\n".toRegex())
+    assertEquals("ab", ab)
+    assertNull(n)
   }
 
   val phrase = """
