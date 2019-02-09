@@ -403,4 +403,98 @@ class AnyTest {
     val actual = input.trimEnd()
     assertEquals(expected, actual)
   }
+
+  @Test
+  fun List_String_indexOf___1() {
+    val input = listOf("abc", "efg", "123", "456")
+    val actual = input.indexOf("efg".toRegex())
+    assertEquals(1, actual)
+  }
+
+  @Test
+  fun List_String_indexOf___2() {
+    val input = listOf("abc", "efg", "123", "456")
+    val actual = input.indexOf("".toRegex())
+    assertEquals(0, actual)
+  }
+
+  @Test
+  fun List_String_indexOf___3() {
+    val input = listOf<String>()
+    val actual = input.indexOf("".toRegex())
+    assertEquals(-1, actual)
+  }
+
+  @Test
+  fun List_String_hexToByteArray___1() {
+    val input = "0A6F43500F4A"
+    val list = listOf(0x0A, 0x6F, 0x43, 0x50, 0x0F, 0x4A)
+    val expected = ByteArray(list.size) { list[it].toByte() }
+    val actual = input.hexToByteArray()
+
+    assertEquals(expected.size, actual.size)
+    for(i in 0 until expected.size) {
+      assertEquals(expected[i], actual[i])
+    }
+  }
+
+  @Test
+  fun List_String_hexToByteArray___2() {
+    assertFails {
+      "0A6F43500F4A0".hexToByteArray()
+    }
+  }
+
+  @Test
+  fun List_String_hexToByteArray___3() {
+    assertFails {
+      "0X".hexToByteArray()
+    }
+  }
+
+  @Test
+  fun List_String_hexToByteArray___4() {
+    assertFails {
+      "X0".hexToByteArray()
+    }
+  }
+
+  @Test
+  fun List_String_hexToByteArray___5() {
+    val input = ""
+    val actual = input.hexToByteArray()
+    assertTrue(actual.isEmpty())
+  }
+
+  @Test
+  fun List_String_sha256___1() {
+    val input = "Triumph Or Agony"
+    val expected = """
+      0A6F43500F4A50576945726B9ACF0339
+      5A73A3F9A9B0FFD8A9D0D350A4207565
+    """.lineUp("").hexToByteArray()
+    val actual = input.sha256()
+
+    assertEquals(expected.size, actual.size)
+    for(i in 0 until expected.size) {
+      assertEquals(expected[i], actual[i])
+    }
+  }
+
+  @Test
+  fun List_String_sha512___2() {
+    val input = "Triumph Or Agony"
+    val expected = """
+      7BB5A2271B43FA0F72AE5011A0A682B2
+      CA79AE9E10DFBE70FCFF67BB05A62DF0
+      B4E94FA2E09A88F6D5B268699C00883B
+      7462FAF7AA4A25D94E5C0C642C35DB02
+    """.lineUp("").hexToByteArray()
+    val actual = input.sha512()
+
+    assertEquals(expected.size, actual.size)
+    for(i in 0 until expected.size) {
+      assertEquals(expected[i], actual[i])
+    }
+  }
 }

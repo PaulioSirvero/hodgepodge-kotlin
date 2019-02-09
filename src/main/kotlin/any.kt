@@ -1,3 +1,4 @@
+import java.lang.Exception
 import java.nio.file.Files
 import java.nio.file.Path
 import java.security.MessageDigest
@@ -153,12 +154,12 @@ fun List<String>.trimStart(): List<String> = dropWhile { it.isBlank() }
  *****************************************************************************/
 fun List<String>.trimEnd(): List<String> = dropLastWhile { it.isBlank() }
 
-/**
- * Returns the index of the first string to match the
- * specified regular expression
+/******************************************************************************
+ * Returns the index of the first string to match the specified regular
+ * expression
  *
  * @param[regex] Regex to search with
- */
+ *****************************************************************************/
 fun List<String>.indexOf(regex: Regex): Int {
   for ((i, line) in withIndex()) {
     regex.find(line) ?: continue
@@ -167,27 +168,47 @@ fun List<String>.indexOf(regex: Regex): Int {
   return -1
 }
 
-/** Generates a SHA-256 hash of the string */
+/******************************************************************************
+ * Parses a hex string into a byte array
+ *****************************************************************************/
+fun String.hexToByteArray(): ByteArray {
+
+  // TODO: Could be done with better performance?
+
+  length.ifOdd {
+    throw Exception("Odd length string cannot be a hex string")
+  }
+
+  return ByteArray(length / 2) { i ->
+    val j = i * 2
+
+    val first = Character.digit(this[j], 16)
+    if (first == -1) {
+      throw Exception("Not a valid hex character '${this[j]}'")
+    }
+
+    val second = Character.digit(this[j + 1], 16)
+    if (second == -1) {
+      throw Exception("Not a valid hex character '${this[j + 1]}'")
+    }
+
+    ((first shl 4) + second).toByte()
+  }
+}
+
+/******************************************************************************
+ * Generates a SHA-256 hash of the string
+ *****************************************************************************/
 fun String.sha256(): ByteArray = MessageDigest
   .getInstance("SHA-256")
   .digest(this.toByteArray())
 
-/** Generates a SHA-512 hash of the string */
+/******************************************************************************
+ * Generates a SHA-512 hash of the string
+ *****************************************************************************/
 fun String.sha512(): ByteArray = MessageDigest
   .getInstance("SHA-512")
   .digest(this.toByteArray())
-
-/**
- * Generates a SHA-256 hash of the string returning the
- * resultant bytes as ASCII
- */
-fun String.sha256AsAscii(): String = sha256().toString(Charsets.US_ASCII)
-
-/**
- * Generates a SHA-512 hash of the string returning the
- * resultant bytes as ASCII
- */
-fun String.sha512AsAscii(): String = sha512().toString(Charsets.US_ASCII)
 
 /** Generates a SHA-256 hash of a file */
 fun Path.sha256(): ByteArray {
