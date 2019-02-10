@@ -322,157 +322,118 @@ inline fun <T> Boolean.ifFalseElse(
   else -> whenFalse()
 }
 
-/**
+/******************************************************************************
  * Invokes the function if this [Number] is negative
  *
  * @param[f] Function to invoke
- */
+ *****************************************************************************/
 @Suppress("UNCHECKED_CAST")
 inline fun <N> N.ifNegative(f: N.() -> N): N
   where N: Number,
         N: Comparable<N>
   = if(compareTo(0 as N) < 0) f(this) else this
 
-/**
+/******************************************************************************
  * Invokes the function if this [Number] is not negative
  *
  * @param[f] Function to invoke
- */
+ *****************************************************************************/
 @Suppress("UNCHECKED_CAST")
 inline fun <N> N.ifNonNegative(f: N.() -> N): N
   where N: Number,
         N: Comparable<N>
   = if(compareTo(0 as N) >= 0) f(this) else this
 
-/**
- * Invokes the function if this [Number] is strictly
- * positive, as in, positive and not zero
+/******************************************************************************
+ * Invokes the function if this [Number] is positive and not zero
  *
  * @param[f] Function to invoke
- */
+ *****************************************************************************/
 @Suppress("UNCHECKED_CAST")
 inline fun <N> N.ifPositive(f: N.() -> N): N
   where N: Number,
         N: Comparable<N>
   = if(compareTo(0 as N) > 0) f(this) else this
 
-/**
+/******************************************************************************
  * Invokes the function if this [Number] is not positive
  *
  * @param[f] Function to invoke
- */
+ *****************************************************************************/
 @Suppress("UNCHECKED_CAST")
 inline fun <N> N.ifNonPositive(f: N.() -> N): N
   where N: Number,
         N: Comparable<N>
   = if(compareTo(0 as N) <= 0) f(this) else this
 
-/**
+/******************************************************************************
  * Invokes the function if this [Number] is exactly zero
  *
  * @param[f] Function to invoke
- */
+ *****************************************************************************/
 @Suppress("UNCHECKED_CAST")
 inline fun <N> N.ifZero(f: N.() -> N): N
   where N: Number,
         N: Comparable<N>
   = if(compareTo(0 as N) == 0) f(this) else this
 
-/**
+/******************************************************************************
  * Invokes the function if this [Number] is not zero
  *
  * @param[f] Function to invoke
- */
+ *****************************************************************************/
 @Suppress("UNCHECKED_CAST")
 inline fun <N> N.ifNotZero(f: N.() -> N): N
   where N: Number,
         N: Comparable<N>
   = if(compareTo(0 as N) != 0) f(this) else this
 
-/**
+/******************************************************************************
  * Invokes the function if this [Int] is odd
  *
  * @param[f] Function to invoke
- */
+ *****************************************************************************/
 @Suppress("UNCHECKED_CAST")
 inline fun Int.ifOdd(f: Int.() -> Int): Int
   = if(this % 2 != 0) f(this) else this
 
-/**
+/******************************************************************************
  * Invokes the function if this [Long] is odd
  *
  * @param[f] Function to invoke
- */
+ *****************************************************************************/
 @Suppress("UNCHECKED_CAST")
 inline fun Long.ifOdd(f: Long.() -> Long): Long
   = if(this % 2 != 0L) f(this) else this
 
 
-/**
+/******************************************************************************
  * Invokes the function if this [Int] is even
  *
  * @param[f] Function to invoke
- */
+ *****************************************************************************/
 @Suppress("UNCHECKED_CAST")
 inline fun Int.ifEven(f: Int.() -> Int): Int
   = if(this % 2 == 0) f(this) else this
 
-/**
+/******************************************************************************
  * Invokes the function if this [Long] is even
  *
  * @param[f] Function to invoke
- */
+ *****************************************************************************/
 @Suppress("UNCHECKED_CAST")
 inline fun Long.ifEven(f: Long.() -> Long): Long
   = if(this % 2 == 0L) f(this) else this
 
-
-/*
-TODO: Redo loading SQL resources (BELOW)
- */
-
-/** Returns true if the SQL line is a comment */
-fun String.isSqlLineComment(): Boolean = startsWith("\\s--")
-
-/**
- * Filters SQL line comments from a list of SQL lines
+/******************************************************************************
+ * Creates a time sensitive greeting, uses UTC clock by default
  *
- * @param[fileName] Name of the resource file
- * @param[T] Class to relatively load the resource from
- */
-inline fun <reified T> loadSqlResource(fileName: String): String {
-  return T::class.java.getResource(fileName)
-    .openStream()
-    .bufferedReader(Charsets.UTF_8)
-    .use {
-      it.lineSequence()
-        .map { it.trim() }
-        .filterNot { it.isSqlLineComment() }
-        .joinToString(" ")
-    }
-}
-
-/*
-TODO: Redo loading SQL resources (ABOVE)
- */
-
-/**
- * Creates a time sensitive greeting
- *
- * @param[msg] Custom part of the message
- */
-fun createGreeting(msg: String = ""): String {
-  val now = OffsetDateTime.now(ZoneOffset.UTC)
-  val local = now.toLocalTime()
-
-  val body = when {
-    msg.isBlank() -> ""
-    else -> ", $msg"
-  }
-
-  return when {
-    local.isAfter(LocalTime.MIDNIGHT) && local.isBefore(LocalTime.NOON) -> "Good morning (UTC)$body"
-    local.isBefore(LocalTime.of(18, 0)) -> "Good afternoon (UTC)$body"
-    else -> "Good evening (UTC)$body"
-  }
+ * @param[local] Time to base the greeting from
+ *****************************************************************************/
+fun createGreeting(
+  local: LocalTime = OffsetDateTime.now(ZoneOffset.UTC).toLocalTime()
+): String = when {
+  local.isAfter(LocalTime.MIDNIGHT) && local.isBefore(LocalTime.NOON) -> "Good morning"
+  local.isBefore(LocalTime.of(18, 0)) -> "Good afternoon"
+  else -> "Good evening"
 }

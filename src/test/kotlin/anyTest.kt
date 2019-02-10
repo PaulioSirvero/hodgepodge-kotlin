@@ -650,4 +650,160 @@ class AnyTest {
     )
     assertEquals(0, actual)
   }
+
+  @Test
+  fun Number_ifNegative___1() {
+    val actual = (-1).ifNegative { 0 }
+    assertEquals(0, actual)
+  }
+
+  @Test
+  fun Number_ifNegative___2() {
+    val actual = (0).ifNegative { -1 }
+    assertEquals(0, actual)
+  }
+
+  @Test
+  fun Number_ifNegative___3() {
+    val actual = (1).ifNegative { -1 }
+    assertEquals(1, actual)
+  }
+
+  @Test
+  fun Number_ifNonNegative___1() {
+    val actual = (-1).ifNonNegative { 0 }
+    assertEquals(-1, actual)
+  }
+
+  @Test
+  fun Number_ifNonNegative___2() {
+    val actual = (0).ifNonNegative { 1 }
+    assertEquals(1, actual)
+  }
+
+  @Test
+  fun Number_ifNonNegative___3() {
+    val actual = (1).ifNonNegative { 0 }
+    assertEquals(0, actual)
+  }
+
+  @Test
+  fun Number_ifPositive___1() {
+    val actual = (1).ifPositive { 0 }
+    assertEquals(0, actual)
+  }
+
+  @Test
+  fun Number_ifPositive___2() {
+    val actual = (0).ifPositive { -1 }
+    assertEquals(0, actual)
+  }
+
+  @Test
+  fun Number_ifPositive___3() {
+    val actual = (-1).ifPositive { 1 }
+    assertEquals(-1, actual)
+  }
+
+  @Test
+  fun Number_ifNonPositive___1() {
+    val actual = (-1).ifNonPositive { 0 }
+    assertEquals(0, actual)
+  }
+
+  @Test
+  fun Number_ifNonPositive___2() {
+    val actual = (0).ifNonPositive { 1 }
+    assertEquals(1, actual)
+  }
+
+  @Test
+  fun Number_ifNonPositive___3() {
+    val actual = (1).ifNonPositive { 0 }
+    assertEquals(1, actual)
+  }
+
+  @Test
+  fun Number_ifZero___1() {
+    val actual = (0).ifZero { 1 }
+    assertEquals(1, actual)
+  }
+
+  @Test
+  fun Number_ifZero___2() {
+    val actual = (1).ifZero { -1 }
+    assertEquals(1, actual)
+  }
+
+  @Test
+  fun Number_ifZero___3() {
+    val actual = (-1).ifZero { 1 }
+    assertEquals(-1, actual)
+  }
+
+  @Test
+  fun Number_ifNotZero___1() {
+    val actual = (-1).ifNotZero { 0 }
+    assertEquals(0, actual)
+  }
+
+  @Test
+  fun Number_ifNotZero___2() {
+    val actual = (1).ifNotZero { 0 }
+    assertEquals(0, actual)
+  }
+
+  @Test
+  fun Number_ifNotZero___3() {
+    val actual = (0).ifNotZero { 1 }
+    assertEquals(0, actual)
+  }
+
+  @Test
+  fun Int_ifOdd___1() {
+    val actual = (0).ifOdd { 1 }
+    assertEquals(0, actual)
+  }
+
+  @Test
+  fun Int_ifOdd___2() {
+    val actual = (1).ifOdd { 0 }
+    assertEquals(0, actual)
+  }
+
+  @Test
+  fun Long_ifOdd___1() {
+    val actual = (0L).ifOdd { 1 }
+    assertEquals(0, actual)
+  }
+
+  @Test
+  fun Long_ifOdd___2() {
+    val actual = (1L).ifOdd { 0 }
+    assertEquals(0, actual)
+  }
+
+  @Test
+  fun Int_ifEven___1() {
+    val actual = (0).ifEven { 1 }
+    assertEquals(1, actual)
+  }
+
+  @Test
+  fun Int_ifEven___2() {
+    val actual = (1).ifEven { 0 }
+    assertEquals(1, actual)
+  }
+
+  @Test
+  fun Long_ifEven___1() {
+    val actual = (0L).ifEven { 1 }
+    assertEquals(1, actual)
+  }
+
+  @Test
+  fun Long_ifEven___2() {
+    val actual = (1L).ifEven { 0 }
+    assertEquals(1, actual)
+  }
 }
