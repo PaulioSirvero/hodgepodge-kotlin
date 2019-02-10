@@ -1,7 +1,19 @@
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
+import java.nio.file.Files
+import java.nio.file.Paths
 import kotlin.test.*
 
 class AnyTest {
+
+  private val file_1 = Paths.get("src/test/resources/test.txt")
+    .toAbsolutePath()
+    .normalize()
+
+  @AfterEach
+  fun afterEachTest() {
+    Files.deleteIfExists(file_1)
+  }
 
   // TODO: Split these tests into different test files but leave 'any.kt'
   // TODO: as a monofile so it's easy to do editor searches
@@ -482,7 +494,7 @@ class AnyTest {
   }
 
   @Test
-  fun List_String_sha512___2() {
+  fun List_String_sha512___1() {
     val input = "Triumph Or Agony"
     val expected = """
       7BB5A2271B43FA0F72AE5011A0A682B2
@@ -491,6 +503,56 @@ class AnyTest {
       7462FAF7AA4A25D94E5C0C642C35DB02
     """.lineUp("").hexToByteArray()
     val actual = input.sha512()
+
+    assertEquals(expected.size, actual.size)
+    for(i in 0 until expected.size) {
+      assertEquals(expected[i], actual[i])
+    }
+  }
+
+  @Test
+  fun Path_fileToSha256___1() {
+    println("""
+      ...Path.fileToSha256()
+      When given a valid path to an existing file that contains some data
+      The files content is hashed using SHA-256
+      And the resultant hash is returned
+    """.lineUp("\n\t"))
+
+    Files.write(file_1, "Triumph Or Agony".toByteArray())
+
+    val expected = """
+      0A6F43500F4A50576945726B9ACF0339
+      5A73A3F9A9B0FFD8A9D0D350A4207565
+    """.lineUp("").hexToByteArray()
+
+    val actual = file_1.fileToSha256()
+
+    assertEquals(expected.size, actual.size)
+    for(i in 0 until expected.size) {
+      assertEquals(expected[i], actual[i])
+    }
+  }
+
+  @Test
+  fun Path_fileToSha512___1() {
+    println("""
+      ...Path.fileToSha512()
+      When given a valid path to an existing file that contains some data
+      The files content is hashed using SHA-512
+      And the resultant hash is returned
+    """.lineUp("\n\t"))
+
+    Files.write(file_1, "Triumph Or Agony".toByteArray())
+
+    val expected = """
+      7BB5A2271B43FA0F72AE5011A0A682B2
+      CA79AE9E10DFBE70FCFF67BB05A62DF0
+      B4E94FA2E09A88F6D5B268699C00883B
+      7462FAF7AA4A25D94E5C0C642C35DB02
+    """.lineUp("").hexToByteArray()
+
+    val actual = file_1.fileToSha512()
 
     assertEquals(expected.size, actual.size)
     for(i in 0 until expected.size) {

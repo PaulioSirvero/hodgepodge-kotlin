@@ -1,4 +1,6 @@
+import java.io.ByteArrayInputStream
 import java.lang.Exception
+import java.nio.ByteBuffer
 import java.nio.file.Files
 import java.nio.file.Path
 import java.security.MessageDigest
@@ -119,14 +121,13 @@ fun String.suffix(suffix: String): String = when {
 }
 
 /******************************************************************************
- * First removes leading and trailing whitespace the replaces line breaks
+ * First removes leading and trailing whitespace then replaces line breaks
  * (including their leading and trailing whitespace) with the supplied
- * delimiter so that the string forms a single line. By default a space is
- * used as the separator
+ * delimiter. By default a space is used as the new separator
  *
- * @param[delim] Delimiter to replace with
+ * @param[delim] Delimiter to replace each line with
  *****************************************************************************/
-fun String.lineUp(delim: String = " "): String  = when {
+fun String.lineUp(delim: String = " "): String = when {
   isBlank() -> ""
   else -> split("\n")
     .filter { it.isNotBlank() }
@@ -198,6 +199,8 @@ fun String.hexToByteArray(): ByteArray {
 
 /******************************************************************************
  * Generates a SHA-256 hash of the string
+ *
+ * TODO: What about Charset? UTF-8 is assumed at the moment
  *****************************************************************************/
 fun String.sha256(): ByteArray = MessageDigest
   .getInstance("SHA-256")
@@ -205,54 +208,54 @@ fun String.sha256(): ByteArray = MessageDigest
 
 /******************************************************************************
  * Generates a SHA-512 hash of the string
+ *
+ * TODO: What about Charset? UTF-8 is assumed at the moment
  *****************************************************************************/
 fun String.sha512(): ByteArray = MessageDigest
   .getInstance("SHA-512")
   .digest(this.toByteArray())
 
-/** Generates a SHA-256 hash of a file */
-fun Path.sha256(): ByteArray {
+/******************************************************************************
+ * Generates a SHA-256 hash of a file
+ *
+ * TODO: What about Charset? UTF-8 is assumed at the moment
+ *****************************************************************************/
+fun Path.fileToSha256(
+  buffer: ByteArray = ByteArray(1024 * 16)
+): ByteArray {
 
-  val buffer = ByteArray(1024 * 32)
   val stream = Files.newInputStream(this)
   val hasher = MessageDigest.getInstance("SHA-256")
 
-  var linesRead = stream.read(buffer)
-  while (linesRead != -1) {
-    hasher.update(buffer)
-    linesRead = stream.read(buffer)
+  var read = stream.read(buffer)
+  while (read != -1) {
+    hasher.update(buffer, 0, read)
+    read = stream.read(buffer)
   }
 
   return hasher.digest()
 }
 
-/** Generates a SHA-512 hash of a file */
-private fun Path.sha512(): ByteArray {
+/******************************************************************************
+ * Generates a SHA-512 hash of a file
+ *
+ * TODO: What about Charset? UTF-8 is assumed at the moment
+ *****************************************************************************/
+fun Path.fileToSha512(
+  buffer: ByteArray = ByteArray(1024 * 16)
+): ByteArray {
 
-  val buffer = ByteArray(1024 * 32)
   val stream = Files.newInputStream(this)
   val hasher = MessageDigest.getInstance("SHA-512")
 
-  var linesRead = stream.read(buffer)
-  while (linesRead != -1) {
-    hasher.update(buffer)
-    linesRead = stream.read(buffer)
+  var read = stream.read(buffer)
+  while (read != -1) {
+    hasher.update(buffer, 0, read)
+    read = stream.read(buffer)
   }
 
   return hasher.digest()
 }
-
-/**
- * Generates a SHA-256 hash of the file returning the
- * resultant bytes as ASCII
- */
-fun Path.sha256AsAscii(): String = sha256().toString(Charsets.US_ASCII)
-
-/**
- * Generates a SHA-512 hash of the file returning the
- * resultant bytes as ASCII
- */
-fun Path.sha512AsAscii(): String = sha512().toString(Charsets.US_ASCII)
 
 /**
  * Invokes the function if this object is null
