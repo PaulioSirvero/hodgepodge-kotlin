@@ -2,6 +2,7 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import java.nio.file.Files
 import java.nio.file.Paths
+import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.test.*
 
 class AnyTest {
@@ -558,5 +559,43 @@ class AnyTest {
     for(i in 0 until expected.size) {
       assertEquals(expected[i], actual[i])
     }
+  }
+
+  @Test
+  fun T_ifNull___1() {
+    val actual = (null as Boolean?).ifNull { null }
+    assertNull(actual)
+  }
+
+  @Test
+  fun T_ifNull___2() {
+    val actual = true.ifNull { null }
+    assertNotNull(actual)
+  }
+
+  @Test
+  fun T_ifNotNull___1() {
+    val actual = false.ifNotNull { true }
+    assertTrue(actual!!)
+  }
+
+  @Test
+  fun T_ifNotNull___2() {
+    val actual = (null as Boolean?).ifNotNull { false }
+    assertNull(actual)
+  }
+
+  @Test
+  fun Boolean_ifTrue___1() {
+    val actual = AtomicBoolean(false)
+    true.ifTrue{ actual.getAndSet(true) }
+    assertTrue(actual.get())
+  }
+
+  @Test
+  fun Boolean_ifTrue___2() {
+    val actual = AtomicBoolean(true)
+    true.ifFalse{ actual.getAndSet(false) }
+    assertTrue(actual.get())
   }
 }

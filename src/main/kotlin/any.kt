@@ -257,36 +257,28 @@ fun Path.fileToSha512(
   return hasher.digest()
 }
 
-/**
+/******************************************************************************
  * Invokes the function if this object is null
  *
  * @param[f] Function to invoke
- */
+ *****************************************************************************/
 inline fun <T> T?.ifNull(f: () -> T?): T? = this ?: f()
 
-/**
- * Invokes the function if this object is real
+/******************************************************************************
+ * Invokes the function if this object is NOT null
  *
  * @param[f] Function to invoke
- */
+ *****************************************************************************/
 inline fun <T> T?.ifNotNull(f: () -> T?): T? = when {
   this != null -> f()
   else -> null
 }
 
-/**
- * Invokes the function if this object is null returning
- * the result
- *
- * @param[f] Function to invoke
- */
-inline fun <T> T?.onlyReal(f: () -> T): T = this ?: f()
-
-/**
+/******************************************************************************
  * Invokes the function if this boolean is true
  *
  * @param[f] Function to invoke
- */
+ *****************************************************************************/
 inline fun Boolean.ifTrue(f: () -> Boolean): Boolean = when {
   this -> f()
   else -> this
