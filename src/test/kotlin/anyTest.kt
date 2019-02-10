@@ -588,14 +588,66 @@ class AnyTest {
   @Test
   fun Boolean_ifTrue___1() {
     val actual = AtomicBoolean(false)
-    true.ifTrue{ actual.getAndSet(true) }
+    true.ifTrue { actual.getAndSet(true) }
     assertTrue(actual.get())
   }
 
   @Test
   fun Boolean_ifTrue___2() {
     val actual = AtomicBoolean(true)
-    true.ifFalse{ actual.getAndSet(false) }
+    false.ifTrue { actual.getAndSet(false) }
     assertTrue(actual.get())
+  }
+
+
+  @Test
+  fun Boolean_ifFalse___1() {
+    val actual = AtomicBoolean(false)
+    false.ifFalse { actual.getAndSet(true) }
+    assertTrue(actual.get())
+  }
+
+  @Test
+  fun Boolean_ifFalse___2() {
+    val actual = AtomicBoolean(true)
+    true.ifFalse { actual.getAndSet(false) }
+    assertTrue(actual.get())
+  }
+
+
+  @Test
+  fun Boolean_ifTrueElse___1() {
+    val actual = true.ifTrueElse(
+      { 0 },
+      { -1 }
+    )
+    assertEquals(0, actual)
+  }
+
+  @Test
+  fun Boolean_ifTrueElse___2() {
+    val actual = false.ifTrueElse(
+      { -1 },
+      { 0 }
+    )
+    assertEquals(0, actual)
+  }
+
+  @Test
+  fun Boolean_ifFalseElse___1() {
+    val actual = true.ifFalseElse(
+      { -1 },
+      { 0 }
+    )
+    assertEquals(0, actual)
+  }
+
+  @Test
+  fun Boolean_ifFalseElse___2() {
+    val actual = false.ifFalseElse(
+      { 0 },
+      { -1 }
+    )
+    assertEquals(0, actual)
   }
 }

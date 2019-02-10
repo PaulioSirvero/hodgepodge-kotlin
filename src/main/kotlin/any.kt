@@ -284,24 +284,23 @@ inline fun Boolean.ifTrue(f: () -> Boolean): Boolean = when {
   else -> this
 }
 
-/**
+/******************************************************************************
  * Invokes the function if this boolean is false
  *
  * @param[f] Function to invoke
- */
+ *****************************************************************************/
 inline fun Boolean.ifFalse(f: () -> Boolean): Boolean = when {
   this -> this
   else -> f()
 }
 
-/**
- * Invokes the first function if this boolean is true
- * else invokes the second
+/******************************************************************************
+ * Invokes the first function if this boolean is true else invokes the second
  *
  * @param[whenTrue] Function to invoke if true
  * @param[whenFalse] Function to invoke if false
- */
-inline fun <T> Boolean.fold(
+ *****************************************************************************/
+inline fun <T> Boolean.ifTrueElse(
   whenTrue: () -> T,
   whenFalse: () -> T
 ): T = when {
@@ -309,14 +308,13 @@ inline fun <T> Boolean.fold(
   else -> whenFalse()
 }
 
-/**
- * Invokes the first function if this boolean is false
- * else invokes the second
+/******************************************************************************
+ * Invokes the first function if this boolean is false else invokes the second
  *
  * @param[whenFalse] Function to invoke if false
  * @param[whenTrue] Function to invoke if true
- */
-inline fun <T> Boolean.fold2(
+ *****************************************************************************/
+inline fun <T> Boolean.ifFalseElse(
   whenFalse: () -> T,
   whenTrue: () -> T
 ): T = when {
