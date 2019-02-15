@@ -1,214 +1,235 @@
-
 import org.junit.jupiter.api.Test
-import java.util.*
 import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
+import kotlin.test.assertFails
+import kotlin.test.assertTrue
 
-private class VarSrc(
-  val groupless: Map<String, String>,
-  val grouped: Map<String, List<String>>
-): VariableSource {
+class Substitutor2Test {
 
-  override fun valueOf(name: String): Optional<String> = groupless[name].toOptional()
-
-  override fun valueOf(group: String, index: Int): Optional<String> {
-    val list = grouped[group] ?: return Optional.empty()
-    if (index >= list.size) return Optional.empty()
-    return list[index].toOptional()
-  }
-}
-
-private val groupless = mapOf(
-  "abc" to "123",
-  "efg" to "456",
-  "hij" to "789"
-)
-
-private val lean = listOf("delete", "simplify", "automate")
-private val powerTriangle = listOf("power", "root", "log")
-private val grouped = mapOf(
-  "lean" to lean,
-  "powerTriangle" to powerTriangle
-)
-
-private fun new() = Substitutor.bashStyle(
-  VarSrc(groupless, grouped)
-)
-
-private fun assertGood(expected: String?, result: AnyResult<String>) {
-  assertNotNull(result)
-  val actual = result.unwrap()
-  assertEquals(expected, actual)
-}
-
-class BashStyleSubstitutorTest {
-
-  @Test
-  fun constructor_constructs_withoutError() {
-    new()
+  private val stampVars: (String) -> String? = {
+    when (it) {
+      "Weather" -> "wax"
+      "Rince" -> "wind"
+      else -> null
+    }
   }
 
   @Test
-  fun noTemplates_returnsInputUnchanged() {
-    val expected = "expected"
-    val result = new().format(expected)
-    assertGood(expected, result)
+  fun stamp___1() {
+    """
+      ...stamp___1()
+      When given a stencil only containing a single variable
+      Returns that value
+    """.describe()
+
+    val sub = Substitutor2.bashStyle(stampVars)
+    val actual = sub.stamp("\${Weather}")
+    assertEquals("wax", actual)
   }
 
   @Test
-  fun groupLess_soloTemplate_goodResult() {
-    val stencil = "\${abc}"
-    val expected = "123"
-    val result = new().format(stencil)
-    assertGood(expected, result)
+  fun stamp___2() {
+    """
+      ...stamp___2()
+      When given a stencil containing two variables
+      Returns a string containing mapped values for both variables
+    """.describe()
+
+    val sub = Substitutor2.bashStyle(stampVars)
+    val actual = sub.stamp("\${Weather}\${Rince}")
+    assertEquals("waxwind", actual)
   }
 
   @Test
-  fun groupLess_withPrefix_goodResult() {
-    val stencil = "tiger \${abc}"
-    val expected = "tiger 123"
-    val result = new().format(stencil)
-    assertGood(expected, result)
+  fun stamp___3() {
+    """
+      ...stamp___3()
+      When given a stencil containing two variables & other text
+      Returns the exact expected string
+    """.describe()
+
+    val sub = Substitutor2.bashStyle(stampVars)
+    val actual = sub.stamp("Weather\${Weather} & Rince\${Rince}")
+    assertEquals("Weatherwax & Rincewind", actual)
   }
 
   @Test
-  fun groupLess_withSuffix_goodResult() {
-    val stencil = "\${abc} lion"
-    val expected = "123 lion"
-    val result = new().format(stencil)
-    assertGood(expected, result)
+  fun stamp___4() {
+    """
+      ...stamp___4()
+      When given an empty stencil
+      Returns an empty string
+    """.describe()
+
+    val sub = Substitutor2.bashStyle(stampVars)
+    val actual = sub.stamp("")
+    assertEquals("", actual)
   }
 
   @Test
-  fun groupLess_withPrefixAndSuffix_goodResult() {
-    val stencil = "tiger \${abc} lion"
-    val expected = "tiger 123 lion"
-    val result = new().format(stencil)
-    assertGood(expected, result)
+  fun stamp___5() {
+    """
+      ...stamp___5()
+      When given a stencil not containing any variables
+      Returns the input
+    """.describe()
+
+    val expected = "\n luggage \n"
+    val sub = Substitutor2.bashStyle(stampVars)
+    val actual = sub.stamp(expected)
+    assertEquals(expected, actual)
   }
 
   @Test
-  fun groupLess_multiple_goodResult() {
-    val stencil = "\${abc}\${efg}\${hij}"
-    val expected = "123456789"
-    val result = new().format(stencil)
-    assertGood(expected, result)
+  fun stamp___6() {
+    """
+      ...stamp___6()
+      When given a stencil containing a variable
+      But does not have a mapped value
+      Throws an exception
+    """.describe()
+
+    assertFails {
+      val sub = Substitutor2.bashStyle { null }
+      sub.stamp("\${abc}")
+    }
   }
 
   @Test
-  fun groupLess_multipleWithText_goodResult() {
-    val stencil = "\${abc} tiger \${efg} lynx \${hij}"
-    val expected = "123 tiger 456 lynx 789"
-    val result = new().format(stencil)
-    assertGood(expected, result)
+  fun stamp___7() {
+    """
+      ...stamp___7()
+      When given a stencil containing multiple occurrences of the same variable
+      Returns the input with all occurrences replaced with the mapped value
+    """.describe()
+
+    val sub = Substitutor2.bashStyle(stampVars)
+    val actual = sub.stamp("\${Rince}_\${Rince}_\${Rince}")
+    assertEquals("wind_wind_wind", actual)
   }
 
   @Test
-  fun groupLess_noEndBracket_GoodResult() {
-    val stencil = "\${abc"
-    val expected = "\${abc"
-    val result = new().format(stencil)
-    assertGood(expected, result)
+  fun stamp___8() {
+    """
+      ...stamp___8()
+      When given a regex that doesn't contain an explicit group
+      Throws an exception
+    """.describe()
+
+    assertFails {
+      val sub = Substitutor2("abc".toRegex()) { "" }
+      sub.stamp("abc")
+    }
   }
 
   @Test
-  fun groupLess_badFormat_GoodResult() {
-    val stencil = "\${abc efg}"
-    val expected = "\${abc efg}"
-    val result = new().format(stencil)
-    assertGood(expected, result)
+  fun safeStamp___1() {
+    """
+      ...safeStamp___1()
+      When given a stencil only containing a single variable
+      Returns a good result that contains the expected value
+    """.describe()
+
+    val sub = Substitutor2.bashStyle(stampVars)
+    val result = sub.safeStamp("\${Weather}")
+    assertTrue(result.isGood)
+    assertEquals("wax", result.unwrap())
   }
 
   @Test
-  fun groupLess_notFound_BadResult() {
-    val stencil = "\${tiger}"
-    val result = new().format(stencil)
-    assert(result.isBad)
+  fun safeStamp___2() {
+    """
+      ...safeStamp___2()
+      When given a stencil containing two variables
+      Returns a good result that contains mapped values for both variables
+    """.describe()
+
+    val sub = Substitutor2.bashStyle(stampVars)
+    val result = sub.safeStamp("\${Weather}\${Rince}")
+    assertTrue(result.isGood)
+    assertEquals("waxwind", result.unwrap())
   }
 
   @Test
-  fun grouped_soloTemplate_goodResult() {
-    val stencil = "\${lean:0}"
-    val expected = "delete"
-    val result = new().format(stencil)
-    assertGood(expected, result)
+  fun safeStamp___3() {
+    """
+      ...safeStamp___3()
+      When given a stencil containing two variables & other text
+      Returns a good result that contains the expected string
+    """.describe()
+
+    val sub = Substitutor2.bashStyle(stampVars)
+    val result = sub.safeStamp("Weather\${Weather} & Rince\${Rince}")
+    assertTrue(result.isGood)
+    assertEquals("Weatherwax & Rincewind", result.unwrap())
   }
 
   @Test
-  fun grouped_withPrefix_goodResult() {
-    val stencil = "tiger \${lean:0}"
-    val expected = "tiger delete"
-    val result = new().format(stencil)
-    assertGood(expected, result)
+  fun safeStamp___4() {
+    """
+      ...safeStamp___4()
+      When given an empty stencil
+      Returns a good result containing an empty string
+    """.describe()
+
+    val sub = Substitutor2.bashStyle(stampVars)
+    val result = sub.safeStamp("")
+    assertTrue(result.isGood)
+    assertEquals("", result.unwrap())
   }
 
   @Test
-  fun grouped_withSuffix_goodResult() {
-    val stencil = "\${lean:0} lynx"
-    val expected = "delete lynx"
-    val result = new().format(stencil)
-    assertGood(expected, result)
+  fun safeStamp___5() {
+    """
+      ...safeStamp___5()
+      When given a stencil not containing any variables
+      Returns a good result containing the input
+    """.describe()
+
+    val expected = "\n luggage \n"
+    val sub = Substitutor2.bashStyle(stampVars)
+    val result = sub.safeStamp(expected)
+    assertTrue(result.isGood)
+    assertEquals(expected, result.unwrap())
   }
 
   @Test
-  fun grouped_withPrefixAndSuffix_goodResult() {
-    val stencil = "tiger \${lean:0} lynx"
-    val expected = "tiger delete lynx"
-    val result = new().format(stencil)
-    assertGood(expected, result)
+  fun safeStamp___6() {
+    """
+      ...safeStamp___6()
+      When given a stencil containing a variable
+      But does not have a mapped value
+      Returns a bad result
+    """.describe()
+
+    val sub = Substitutor2.bashStyle { null }
+    val result = sub.safeStamp("\${abc}")
+    assertTrue(result.isBad)
   }
 
   @Test
-  fun grouped_multiple_goodResult() {
-    val stencil = "\${powerTriangle:0}\${powerTriangle:1}\${powerTriangle:2}"
-    val expected = "powerrootlog"
-    val result = new().format(stencil)
-    assertGood(expected, result)
+  fun safeStamp___7() {
+    """
+      ...safeStamp___7()
+      When given a stencil containing multiple occurrences of the same variable
+      Returns a good result that contains the input with all occurrences replaced with the mapped value
+    """.describe()
+
+    val sub = Substitutor2.bashStyle(stampVars)
+    val result = sub.safeStamp("\${Rince}_\${Rince}_\${Rince}")
+    assertTrue(result.isGood)
+    assertEquals("wind_wind_wind", result.unwrap())
   }
 
   @Test
-  fun grouped_multipleWithText_goodResult() {
-    val stencil = "\${lean:1} tiger \${powerTriangle:1} lynx \${powerTriangle:2}"
-    val expected = "simplify tiger root lynx log"
-    val result = new().format(stencil)
-    assertGood(expected, result)
-  }
+  fun safeStamp___8() {
+    """
+      ...safeStamp___8()
+      When given a regex that doesn't contain an explicit group
+      Returns a bad result
+    """.describe()
 
-  @Test
-  fun grouped_noEndBracket_GoodResult() {
-    val stencil = "\${lean:0"
-    val expected = "\${lean:0"
-    val result = new().format(stencil)
-    assertGood(expected, result)
-  }
-
-  @Test
-  fun grouped_badFormat_GoodResult() {
-    val stencil = "\${lean:1bad}"
-    val expected = "\${lean:1bad}"
-    val result = new().format(stencil)
-    assertGood(expected, result)
-  }
-
-  @Test
-  fun grouped_badFormat2_GoodResult() {
-    val stencil = "\${lean:-1}"
-    val expected = "\${lean:-1}"
-    val result = new().format(stencil)
-    assertGood(expected, result)
-  }
-
-  @Test
-  fun grouped_groupNotFound_BadResult() {
-    val stencil = "\${tiger:0}"
-    val result = new().format(stencil)
-    assert(result.isBad)
-  }
-
-  @Test
-  fun grouped_indexTooBig_BadResult() {
-    val stencil = "\${lean:999}"
-    val result = new().format(stencil)
-    assert(result.isBad)
+    val sub = Substitutor2("abc".toRegex()) { "" }
+    val result = sub.safeStamp("abc")
+    assertTrue(result.isBad)
   }
 }

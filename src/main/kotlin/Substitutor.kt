@@ -1,225 +1,93 @@
-import java.util.*
+import AnyResult.Companion.bad
+import java.lang.Exception
 
-// TODO: Needs overhaul with rewritten tests
-// TODO: There is a couple of bugs
+/******************************************************************************
+ * Substitutes variable declarations within template strings (stencils)
+ *
+ * @property[regex] Regular expression used to find variable declarations
+ * within strings
+ * @property[variables] Function that accepts variable names and returns the
+ * associated value
+ *****************************************************************************/
+class Substitutor2(val regex: Regex, val variables: (String) -> String?) {
 
-/** Substitutes parameters within a string  */
-@FunctionalInterface
-interface Substitutor {
-
-  /**
-   * Substitutes all templates within a stencil string
+  /****************************************************************************
+   * Populates the variables within the supplied stencil string throwing an
+   * exception if any problems occur
    *
-   * @param[stencil] String containing templates to be substituted
-   */
-  fun format(stencil: String): AnyResult<String>
-
-    companion object {
-
-    /**
-     * Returns a new substitutor that works with Bash style templates
-     *
-     * @param[variableSource] Source for values of variables
-     */
-    fun bashStyle(variableSource: VariableSource): Substitutor
-      = BashStyleSubstitutor(variableSource)
-  }
-}
-
-/** Returns the value of variables by there name or group and index  */
-interface VariableSource {
-
-  /**
-   * Returns the variable value of the supplied variable name
-   *
-   * @param[name] Name of the variable to get
-   */
-  fun valueOf(name: String): Optional<String>
-
-  /**
-   * Returns the variable value at a specific index within
-   * a specific group (Control file)
-   *
-   * @param[group] Group containing the variable to get
-   * @param[index] Index of the variable value within its group
-   */
-  fun valueOf(group: String, index: Int): Optional<String>
-}
-
-/**
- * Represents a template bounds within a stencil string
- *
- * @property[start] Index of the first char in the template
- * @property[last] Index of the last char in the template
- */
-private sealed class SubTemplate(
-  val start: Int,
-  val last: Int
-) {
-
-  init {
-    start.assertNotNegative("Start index is negative")
-    last.assertNotNegative("Last index is negative")
-    start.assertLessThan(last, "Start index is NOT less than the last index")
-  }
-}
-
-/**
- * Represents a groupless template within a stencil string
- *
- * @property[name] Name of the property
- */
-private class GrouplessSubTemplate(
-  start: Int,
-  last: Int,
-  val name: String
-): SubTemplate(start, last) {
-
-  init {
-    name.assertNotEmpty("Variable name is empty")
-  }
-}
-
-/**
- * Represents a template within a stencil string
- *
- * @param[group] Name of the group found
- * @param[index] Index of the value within its group
- */
-private class GroupSubTemplate(
-  start: Int,
-  last: Int,
-  val group: String,
-  val index: Int
-): SubTemplate(start, last)  {
-
-  init {
-    group.assertNotEmpty("Group name is empty")
-    index.assertNotNegative("Index is negative")
-  }
-}
-
-/**
- * Bash style implementation of [Substitutor]
- *
- * Searches the stencil for '${group:index}' and '${variable}'
- * templates first then replaces each with the value returned from
- * the variable source
- *
- * Because template replacements could contain another template
- * the above process is repeated until no templates exist within
- * the stencil after replacement
- *
- * @param[variables] Source for variables of templates
- */
-private class BashStyleSubstitutor(
-  private val variables: VariableSource
-) : Substitutor {
-
-  /** {@inheritDoc}  */
-  override fun format(stencil: String): AnyResult<String> = try {
-    AnyResult.good(formatInternal(stencil))
-  } catch (ex: Exception) {
-    AnyResult.bad(ex.message!!, ex)
-  }
-
-  /** Internal version of the format function */
-  private val formatInternal: (String) -> String = { stencil ->
+   * @param[stencil] The string containing placeholder variables to populate
+   ***************************************************************************/
+  fun stamp(stencil: String): String {
 
     var result = stencil
 
-    do {
-      val grouped = findGroupTemplates(result)
-      val groupless = findGrouplessTemplates(result)
+    while(true) {
+      val match = regex.find(result)
+      match ?: break
 
-      if (grouped.isEmpty() and groupless.isEmpty()) break
+      if (match.groups.size < 2) throw Exception(
+        "Regular expression must contain an explicit group '$regex'"
+      )
 
-      if (grouped.isNotEmpty()) result = replaceGroupTemplates(grouped, result)
-      if (groupless.isNotEmpty()) result = replaceGrouplessTemplates(groupless, result)
+      val key = match.groups[1]!!.value
+      val value = variables(key) ?: throw Exception(
+        "Could not find value for variable named '${match.value}'"
+      )
 
-    } while (true)
-
-    result
-  }
-
-  /**
-   * Replaces all group templates within a stencil. The template list must
-   * be in the order the templates appear within the stencil
-   */
-  private val replaceGroupTemplates: (List<GroupSubTemplate>, String) -> String = { templates, stencil ->
-
-    val sb = StringBuilder(stencil)
-    templates.reversed().forEach { t ->
-
-      val opt = variables.valueOf(t.group, t.index)
-
-      opt.ifPresentOrElse({ s ->
-        sb.replace(t.start, 1 + t.last, s)
-      }) {
-        throw Exception(
-          "Variable at index " + t.index + " of group '" + t.group + "' returned" +
-            " NULL from the variable source, probably because it could not be found"
-        )
-      }
+      result = result.replaceRange(
+        match.range,
+        value
+      )
     }
 
-    sb.toString()
+    return result
   }
 
-  /**
-   * Replaces all groupless templates within a stencil. The template list must
-   * be in the order the templates appear within the stencil
-   */
-  private val replaceGrouplessTemplates: (List<GrouplessSubTemplate>, String) -> String = { templates, stencil ->
+  /****************************************************************************
+   * Populates the variables within the supplied stencil string returning an
+   * error result instead of throwing an exception
+   *
+   * @param[stencil] The string containing placeholder variables to populate
+   ***************************************************************************/
+  fun safeStamp(stencil: String): AnyResult<String> {
 
-    val sb = StringBuilder(stencil)
-    templates.reversed().forEach { t ->
+    var result = stencil
 
-      val opt = variables.valueOf(t.name)
+    while(true) {
+      val match = regex.find(result)
+      match ?: break
 
-      opt.ifPresentOrElse({ s ->
-        sb.replace(t.start, 1 + t.last, s)
-      }) {
-        throw Exception(
-          "Variable '" + t.name + "' returned NULL from the variable source," +
-            " probably because it could not be found"
-        )
-      }
+      if (match.groups.size < 2) return bad(
+        "Regular expression must contain an explicit group '$regex'"
+      )
+
+      val key = match.groups[1]!!.value
+      val value = variables(key) ?: return bad(
+        "Could not find value for variable named '${match.value}'"
+      )
+
+      result = result.replaceRange(
+        match.range,
+        value
+      )
     }
 
-    sb.toString()
+    return result.realResult()
   }
 
-  /**
-   * Returns a list of variable templates within the
-   * supplied command stencil
-   */
-  private val findGrouplessTemplates: (String) -> List<GrouplessSubTemplate> = { stencil ->
-    "\\\$\\{([a-zA-Z]+)}".toRegex()
-      .findAll(stencil)
-      .map {
-        GrouplessSubTemplate(
-          start = it.range.start,
-          last = it.range.last,
-          name = it.groups[1]!!.value
-        )
-      }.toList()
-  }
+  companion object {
 
-  /**
-   * Returns a list of control file templates within the
-   * supplied command stencil
-   */
-  private val findGroupTemplates: (String) -> List<GroupSubTemplate> = { stencil ->
-    "\\$\\{([a-zA-Z]+):(\\d+)}".toRegex()
-      .findAll(stencil)
-      .map {
-        GroupSubTemplate(
-          start = it.range.start,
-          last = it.range.last,
-          group = it.groups[1]!!.value,
-          index = it.groups[2]!!.value.toInt()
-        )
-      }.toList()
+    /****************************************************************************
+     * Creates a new [Substitutor2] using a bash style '${...}' regular
+     * expression to identify variables
+     *
+     * @param[variables] Function that accepts variable names and returns the
+     * associated value
+     ***************************************************************************/
+    fun bashStyle(variables: (String) -> String?)
+      = Substitutor2("\\\$\\{([a-zA-Z0-9_]+)}".toRegex(), variables)
+    // TODO: [^\\]?
+
+
   }
 }
