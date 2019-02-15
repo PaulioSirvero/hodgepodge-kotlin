@@ -1,3 +1,4 @@
+import AnyResult.Companion.bad
 import java.lang.Exception
 
 /******************************************************************************
@@ -24,10 +25,11 @@ class Substitutor2(val regex: Regex, val variables: (String) -> String?) {
       val match = regex.find(result)
       match ?: break
 
-      val key = match.groups[1]?.value ?: throw Exception(
+      if (match.groups.size < 2) throw Exception(
         "Regular expression must contain an explicit group '$regex'"
       )
 
+      val key = match.groups[1]!!.value
       val value = variables(key) ?: throw Exception(
         "Could not find value for variable named '${match.value}'"
       )
@@ -48,7 +50,29 @@ class Substitutor2(val regex: Regex, val variables: (String) -> String?) {
    * @param[stencil] The string containing placeholder variables to populate
    ***************************************************************************/
   fun safeStamp(stencil: String): AnyResult<String> {
-    TODO("Not yet implemented")
+
+    var result = stencil
+
+    while(true) {
+      val match = regex.find(result)
+      match ?: break
+
+      if (match.groups.size < 2) return bad(
+        "Regular expression must contain an explicit group '$regex'"
+      )
+
+      val key = match.groups[1]!!.value
+      val value = variables(key) ?: return bad(
+        "Could not find value for variable named '${match.value}'"
+      )
+
+      result = result.replaceRange(
+        match.range,
+        value
+      )
+    }
+
+    return result.realResult()
   }
 
   companion object {
