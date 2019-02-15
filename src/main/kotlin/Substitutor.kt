@@ -52,7 +52,7 @@ interface VariableSource {
  * @property[start] Index of the first char in the template
  * @property[last] Index of the last char in the template
  */
-private sealed class Template(
+private sealed class SubTemplate(
   val start: Int,
   val last: Int
 ) {
@@ -69,11 +69,11 @@ private sealed class Template(
  *
  * @property[name] Name of the property
  */
-private class GrouplessTemplate(
+private class GrouplessSubTemplate(
   start: Int,
   last: Int,
   val name: String
-): Template(start, last) {
+): SubTemplate(start, last) {
 
   init {
     name.assertNotEmpty("Variable name is empty")
@@ -86,12 +86,12 @@ private class GrouplessTemplate(
  * @param[group] Name of the group found
  * @param[index] Index of the value within its group
  */
-private class GroupTemplate(
+private class GroupSubTemplate(
   start: Int,
   last: Int,
   val group: String,
   val index: Int
-): Template(start, last)  {
+): SubTemplate(start, last)  {
 
   init {
     group.assertNotEmpty("Group name is empty")
@@ -146,7 +146,7 @@ private class BashStyleSubstitutor(
    * Replaces all group templates within a stencil. The template list must
    * be in the order the templates appear within the stencil
    */
-  private val replaceGroupTemplates: (List<GroupTemplate>, String) -> String = { templates, stencil ->
+  private val replaceGroupTemplates: (List<GroupSubTemplate>, String) -> String = { templates, stencil ->
 
     val sb = StringBuilder(stencil)
     templates.reversed().forEach { t ->
@@ -170,7 +170,7 @@ private class BashStyleSubstitutor(
    * Replaces all groupless templates within a stencil. The template list must
    * be in the order the templates appear within the stencil
    */
-  private val replaceGrouplessTemplates: (List<GrouplessTemplate>, String) -> String = { templates, stencil ->
+  private val replaceGrouplessTemplates: (List<GrouplessSubTemplate>, String) -> String = { templates, stencil ->
 
     val sb = StringBuilder(stencil)
     templates.reversed().forEach { t ->
@@ -194,11 +194,11 @@ private class BashStyleSubstitutor(
    * Returns a list of variable templates within the
    * supplied command stencil
    */
-  private val findGrouplessTemplates: (String) -> List<GrouplessTemplate> = { stencil ->
+  private val findGrouplessTemplates: (String) -> List<GrouplessSubTemplate> = { stencil ->
     "\\\$\\{([a-zA-Z]+)}".toRegex()
       .findAll(stencil)
       .map {
-        GrouplessTemplate(
+        GrouplessSubTemplate(
           start = it.range.start,
           last = it.range.last,
           name = it.groups[1]!!.value
@@ -210,11 +210,11 @@ private class BashStyleSubstitutor(
    * Returns a list of control file templates within the
    * supplied command stencil
    */
-  private val findGroupTemplates: (String) -> List<GroupTemplate> = { stencil ->
+  private val findGroupTemplates: (String) -> List<GroupSubTemplate> = { stencil ->
     "\\$\\{([a-zA-Z]+):(\\d+)}".toRegex()
       .findAll(stencil)
       .map {
-        GroupTemplate(
+        GroupSubTemplate(
           start = it.range.start,
           last = it.range.last,
           group = it.groups[1]!!.value,

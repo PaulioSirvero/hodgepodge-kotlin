@@ -562,6 +562,48 @@ class AnyTest {
   }
 
   @Test
+  fun List_T_onFirst___1() {
+    val actual = AtomicBoolean(false)
+    listOf("a", "b", "c").onFirst { actual.set(true) }
+    assertTrue(actual.get())
+  }
+
+  @Test
+  fun List_T_onFirst___2() {
+    val actual = AtomicBoolean(false)
+    listOf("a").onFirst { actual.set(true) }
+    assertTrue(actual.get())
+  }
+
+  @Test
+  fun List_T_onFirst___3() {
+    val actual = AtomicBoolean(true)
+    listOf<String>().onFirst { actual.set(false) }
+    assertTrue(actual.get())
+  }
+
+  @Test
+  fun List_T_onEachExceptFirst___1() {
+    val actual = mutableListOf<String>()
+    listOf("a", "b", "c").onEachExceptFirst { actual.add(it) }
+    assertEquals(listOf("b", "c"), actual)
+  }
+
+  @Test
+  fun List_T_onEachExceptFirst___2() {
+    val actual = mutableListOf<String>()
+    listOf("a").onEachExceptFirst { actual.add(it) }
+    assertTrue(actual.isEmpty())
+  }
+
+  @Test
+  fun List_T_onEachExceptFirst___3() {
+    val actual = mutableListOf<String>()
+    listOf<String>().onEachExceptFirst { actual.add(it) }
+    assertTrue(actual.isEmpty())
+  }
+
+  @Test
   fun T_ifNull___1() {
     val actual = (null as Boolean?).ifNull { null }
     assertNull(actual)

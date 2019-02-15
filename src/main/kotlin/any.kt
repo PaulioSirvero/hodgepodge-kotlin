@@ -8,6 +8,21 @@ import java.time.ZoneOffset
 import java.util.*
 
 /******************************************************************************
+ * Prints the supplied string indenting every line except the first. Leading
+ * and trailing whitespace is removed from each line and an extra empty line
+ * is printed at the end
+ *****************************************************************************/
+fun String.describe() {
+  lineUp("\n")
+    .split("\n")
+    .onFirst { println(it) }
+    .onEachExceptFirst {
+      println("\t$it")
+    }
+  println()
+}
+
+/******************************************************************************
  * Returns the negated result of the function passed
  *
  * @param[f] Function that produces a boolean to negate
@@ -253,6 +268,30 @@ fun Path.fileToSha512(
   }
 
   return hasher.digest()
+}
+
+/******************************************************************************
+ * Invokes the supplied function on the first item if it has one and returns
+ * the list unchanged
+ *
+ * @param[f] Function to invoke in the first element
+ *****************************************************************************/
+inline fun <T> List<T>.onFirst(f: (T) -> Unit): List<T> {
+  if (size > 0) f(this[0])
+  return this
+}
+
+/******************************************************************************
+ * Invokes the supplied function on the each item except the first as long as
+ * more than one item is present then returns the list unchanged
+ *
+ * @param[f] Function to invoke in the each item except the first
+ *****************************************************************************/
+inline fun <T> List<T>.onEachExceptFirst(f: (T) -> Unit): List<T> {
+  for(i in 1 until size) {
+    f(this[i])
+  }
+  return this
 }
 
 /******************************************************************************
