@@ -1,3 +1,4 @@
+import java.lang.Exception
 
 /******************************************************************************
  * Substitutes variable declarations within template strings (stencils)
@@ -7,7 +8,7 @@
  * @property[variables] Function that accepts variable names and returns the
  * associated value
  *****************************************************************************/
-class Substitutor2(val regex: Regex, val variables: (String) -> String) {
+class Substitutor2(val regex: Regex, val variables: (String) -> String?) {
 
   /****************************************************************************
    * Populates the variables within the supplied stencil string throwing an
@@ -16,7 +17,28 @@ class Substitutor2(val regex: Regex, val variables: (String) -> String) {
    * @param[stencil] The string containing placeholder variables to populate
    ***************************************************************************/
   fun stamp(stencil: String): String {
-    TODO("Not yet implemented")
+
+    var result = stencil
+
+    while(true) {
+      val match = regex.find(result)
+      match ?: break
+
+      val key = match.groups[1]?.value ?: throw Exception(
+        "Regular expression must contain an explicit group '$regex'"
+      )
+
+      val value = variables(key) ?: throw Exception(
+        "Could not find value for variable named '${match.value}'"
+      )
+
+      result = result.replaceRange(
+        match.range,
+        value
+      )
+    }
+
+    return result
   }
 
   /****************************************************************************
@@ -38,8 +60,8 @@ class Substitutor2(val regex: Regex, val variables: (String) -> String) {
      * @param[variables] Function that accepts variable names and returns the
      * associated value
      ***************************************************************************/
-    fun bashStyle(variables: (String) -> String)
-      = Substitutor2("\\\$\\{([a-zA-Z]+)}".toRegex(), variables)
+    fun bashStyle(variables: (String) -> String?)
+      = Substitutor2("\\\$\\{([a-zA-Z0-9_]+)}".toRegex(), variables)
 
 
   }
