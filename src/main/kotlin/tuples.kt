@@ -1,92 +1,69 @@
 
 import kotlin.random.Random
 
-/**
- * Swaps the member values around
- *
- * @return New pair
- */
+/******************************************************************************
+ * Swaps the first and second values around
+ *****************************************************************************/
 fun <A, B> Pair<A, B>.swap(): Pair<B, A> = second to first
 
-/**
+/******************************************************************************
  * Randomly shuffles the members
- *
- * @return New pair or this
- */
+ *****************************************************************************/
 fun <T> Pair<T, T>.shuffle(): Pair<T, T>
   = if(Random.nextBoolean()) this else swap()
 
-/**
- * Returns true if `value in pair`
+/******************************************************************************
+ * Returns true if the supplied value is contained within the pair
  *
  * @param[value] Value to check for
- *
- * @return True if value is in the pair
- */
-infix operator fun <T> Pair<T, T>.contains(value: T): Boolean
+ *****************************************************************************/
+operator fun <T> Pair<T, T>.contains(value: T): Boolean
   = (value == first) or (value == second)
 
-/**
+/******************************************************************************
  * Maps a pair into another pair
  *
  * @param[f] Transformation function
- *
- * @return New pair
- */
+ *****************************************************************************/
 inline fun <A, B, A2, B2> Pair<A, B>.map(
   f: (Pair<A, B>) -> Pair<A2, B2>
 ): Pair<A2, B2> = f(this)
 
-/**
- * Transforms a pair into a [Triple]
+/******************************************************************************
+ * Appends another value to the pair to form a [Triple]
  *
- * @param[f] Transformation function
- *
- * @return New triple
- */
-inline fun <A, B, X, Y, Z> Pair<A, B>.grow(
-  f: (Pair<A, B>) -> Triple<X, Y, Z>
-): Triple<X, Y, Z> = f(this)
+ * @param[f] Supplier function
+ *****************************************************************************/
+inline operator fun <A, B, C> Pair<A, B>.plus(
+  f: Pair<A, B>.() -> C
+): Triple<A, B, C> = Triple(first, second, f(this))
 
-/**
- * Transforms a pair into a [Triple] by appending a value
+/******************************************************************************
+ * Appends another value to the pair to form a [Triple]
  *
  * @param[third] Value to grow with
- *
- * @return New triple
- */
-infix fun <A, B, C> Pair<A, B>.append(
-  third: C
-): Triple<A, B, C> = Triple(
-  first, second, third
-)
-
-/**
- * Transforms a pair into a [Triple] by appending a value
- *
- * @param[third] Value to grow with
- *
- * @return New triple
- */
+ *****************************************************************************/
 infix operator fun <A, B, C> Pair<A, B>.plus(
   third: C
-): Triple<A, B, C> = Triple(
-  first, second, third
-)
+): Triple<A, B, C> = Triple(first, second, third)
 
-/**
- * Transforms a pair into a [Triple] by inserting a value
- * into the center
+/******************************************************************************
+ * Transforms a pair into a [Triple] by inserting a value into the center
+ *
+ * @param[f] Supplier function
+ *****************************************************************************/
+fun <A, B, C> Pair<A, C>.midsert(
+  f: Pair<A, C>.() -> B
+): Triple<A, B, C> = Triple(first, f(this), second)
+
+/******************************************************************************
+ * Transforms a pair into a [Triple] by inserting a value into the center
  *
  * @param[mid] Value to grow with
- *
- * @return New triple
- */
-infix fun <A, B, C> Pair<A, C>.insert(
+ *****************************************************************************/
+fun <A, B, C> Pair<A, C>.midsert(
   mid: B
-): Triple<A, B, C> = Triple(
-  first, mid, second
-)
+): Triple<A, B, C> = Triple(first, mid, second)
 
 /**
  * Transforms a pair into a [Triple] by prepending a value
