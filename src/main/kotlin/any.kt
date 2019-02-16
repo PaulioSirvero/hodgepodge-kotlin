@@ -237,16 +237,17 @@ fun Path.fileToSha256(
   buffer: ByteArray = ByteArray(1024 * 16)
 ): ByteArray {
 
-  val stream = Files.newInputStream(this)
-  val hasher = MessageDigest.getInstance("SHA-256")
+  Files.newInputStream(this).use { stream ->
+    val hasher = MessageDigest.getInstance("SHA-256")
 
-  var read = stream.read(buffer)
-  while (read != -1) {
-    hasher.update(buffer, 0, read)
-    read = stream.read(buffer)
+    var read = stream.read(buffer)
+    while (read != -1) {
+      hasher.update(buffer, 0, read)
+      read = stream.read(buffer)
+    }
+
+    return hasher.digest()
   }
-
-  return hasher.digest()
 }
 
 /******************************************************************************
@@ -258,16 +259,17 @@ fun Path.fileToSha512(
   buffer: ByteArray = ByteArray(1024 * 16)
 ): ByteArray {
 
-  val stream = Files.newInputStream(this)
-  val hasher = MessageDigest.getInstance("SHA-512")
+  Files.newInputStream(this).use { stream ->
+    val hasher = MessageDigest.getInstance("SHA-512")
 
-  var read = stream.read(buffer)
-  while (read != -1) {
-    hasher.update(buffer, 0, read)
-    read = stream.read(buffer)
+    var read = stream.read(buffer)
+    while (read != -1) {
+      hasher.update(buffer, 0, read)
+      read = stream.read(buffer)
+    }
+
+    return hasher.digest()
   }
-
-  return hasher.digest()
 }
 
 /******************************************************************************

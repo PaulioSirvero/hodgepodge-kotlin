@@ -513,12 +513,12 @@ class AnyTest {
 
   @Test
   fun Path_fileToSha256___1() {
-    println("""
+    """
       ...Path.fileToSha256()
       When given a valid path to an existing file that contains some data
       The files content is hashed using SHA-256
       And the resultant hash is returned
-    """.lineUp("\n\t"))
+    """.describe()
 
     Files.write(file_1, "Triumph Or Agony".toByteArray())
 
@@ -537,12 +537,12 @@ class AnyTest {
 
   @Test
   fun Path_fileToSha512___1() {
-    println("""
+    """
       ...Path.fileToSha512()
       When given a valid path to an existing file that contains some data
       The files content is hashed using SHA-512
       And the resultant hash is returned
-    """.lineUp("\n\t"))
+    """.describe()
 
     Files.write(file_1, "Triumph Or Agony".toByteArray())
 
@@ -814,6 +814,12 @@ class AnyTest {
   }
 
   @Test
+  fun Int_ifOdd___3() {
+    val actual = (-1).ifOdd { 0 }
+    assertEquals(0, actual)
+  }
+
+  @Test
   fun Long_ifOdd___1() {
     val actual = (0L).ifOdd { 1 }
     assertEquals(0, actual)
@@ -822,6 +828,12 @@ class AnyTest {
   @Test
   fun Long_ifOdd___2() {
     val actual = (1L).ifOdd { 0 }
+    assertEquals(0, actual)
+  }
+
+  @Test
+  fun Long_ifOdd___3() {
+    val actual = (-1L).ifOdd { 0 }
     assertEquals(0, actual)
   }
 
@@ -838,6 +850,12 @@ class AnyTest {
   }
 
   @Test
+  fun Int_ifEven___3() {
+    val actual = (-1).ifEven { 0 }
+    assertEquals(-1, actual)
+  }
+
+  @Test
   fun Long_ifEven___1() {
     val actual = (0L).ifEven { 1 }
     assertEquals(1, actual)
@@ -847,5 +865,11 @@ class AnyTest {
   fun Long_ifEven___2() {
     val actual = (1L).ifEven { 0 }
     assertEquals(1, actual)
+  }
+
+  @Test
+  fun Long_ifEven___3() {
+    val actual = (-1L).ifEven { 0 }
+    assertEquals(-1, actual)
   }
 }

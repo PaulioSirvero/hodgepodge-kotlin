@@ -14,7 +14,7 @@ import kotlin.math.max
  * @property[variables] Function that accepts variable names and returns the
  * associated value
  *****************************************************************************/
-data class Substitutor2(
+data class Substitutor(
   val regex: Regex,
   val replaceGroup: Int = 0,
   val keyGroup: Int = 0,
@@ -88,16 +88,16 @@ data class Substitutor2(
   companion object {
 
     /****************************************************************************
-     * Creates a new [Substitutor2] using a bash style '${...}' regular
+     * Creates a new [Substitutor] using a bash style '${...}' regular
      * expression to identify variables
      *
      * @param[variables] Function that accepts variable names and returns the
      * associated value
      ***************************************************************************/
-    fun bashStyle(variables: (String) -> String?) = Substitutor2(
-      "[^\\\\]?(\\\$\\{([a-zA-Z0-9_]+)})".toRegex(),
+    fun bashStyle(variables: (String) -> String?) = Substitutor(
+      "\\\$\\{([a-zA-Z0-9_]+)}".toRegex(),
+      0,
       1,
-      2,
       variables
     )
 

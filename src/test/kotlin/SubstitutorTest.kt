@@ -3,7 +3,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFails
 import kotlin.test.assertTrue
 
-class Substitutor2Test {
+class SubstitutorTest {
 
   private val stampVars: (String) -> String? = {
     when (it) {
@@ -21,7 +21,7 @@ class Substitutor2Test {
       Returns that value
     """.describe()
 
-    val sub = Substitutor2.bashStyle(stampVars)
+    val sub = Substitutor.bashStyle(stampVars)
     val actual = sub.stamp("\${Weather}")
     assertEquals("wax", actual)
   }
@@ -34,7 +34,7 @@ class Substitutor2Test {
       Returns a string containing mapped values for both variables
     """.describe()
 
-    val sub = Substitutor2.bashStyle(stampVars)
+    val sub = Substitutor.bashStyle(stampVars)
     val actual = sub.stamp("\${Weather}\${Rince}")
     assertEquals("waxwind", actual)
   }
@@ -47,7 +47,7 @@ class Substitutor2Test {
       Returns the exact expected string
     """.describe()
 
-    val sub = Substitutor2.bashStyle(stampVars)
+    val sub = Substitutor.bashStyle(stampVars)
     val actual = sub.stamp("Weather\${Weather} & Rince\${Rince}")
     assertEquals("Weatherwax & Rincewind", actual)
   }
@@ -60,7 +60,7 @@ class Substitutor2Test {
       Returns an empty string
     """.describe()
 
-    val sub = Substitutor2.bashStyle(stampVars)
+    val sub = Substitutor.bashStyle(stampVars)
     val actual = sub.stamp("")
     assertEquals("", actual)
   }
@@ -74,7 +74,7 @@ class Substitutor2Test {
     """.describe()
 
     val expected = "\n luggage \n"
-    val sub = Substitutor2.bashStyle(stampVars)
+    val sub = Substitutor.bashStyle(stampVars)
     val actual = sub.stamp(expected)
     assertEquals(expected, actual)
   }
@@ -89,7 +89,7 @@ class Substitutor2Test {
     """.describe()
 
     assertFails {
-      val sub = Substitutor2.bashStyle { null }
+      val sub = Substitutor.bashStyle { null }
       sub.stamp("\${abc}")
     }
   }
@@ -102,7 +102,7 @@ class Substitutor2Test {
       Returns the input with all occurrences replaced with the mapped value
     """.describe()
 
-    val sub = Substitutor2.bashStyle(stampVars)
+    val sub = Substitutor.bashStyle(stampVars)
     val actual = sub.stamp("\${Rince}_\${Rince}_\${Rince}")
     assertEquals("wind_wind_wind", actual)
   }
@@ -116,7 +116,7 @@ class Substitutor2Test {
     """.describe()
 
     assertFails {
-      val sub = Substitutor2("abc".toRegex(), 1, 0) { "" }
+      val sub = Substitutor("abc".toRegex(), 1, 0) { "" }
       sub.stamp("abc")
     }
   }
@@ -130,7 +130,7 @@ class Substitutor2Test {
     """.describe()
 
     assertFails {
-      val sub = Substitutor2("abc".toRegex(), 0, 1) { "" }
+      val sub = Substitutor("abc".toRegex(), 0, 1) { "" }
       sub.stamp("abc")
     }
   }
@@ -143,7 +143,7 @@ class Substitutor2Test {
       Returns a good result that contains the expected value
     """.describe()
 
-    val sub = Substitutor2.bashStyle(stampVars)
+    val sub = Substitutor.bashStyle(stampVars)
     val result = sub.safeStamp("\${Weather}")
     assertTrue(result.isGood)
     assertEquals("wax", result.unwrap())
@@ -157,7 +157,7 @@ class Substitutor2Test {
       Returns a good result that contains mapped values for both variables
     """.describe()
 
-    val sub = Substitutor2.bashStyle(stampVars)
+    val sub = Substitutor.bashStyle(stampVars)
     val result = sub.safeStamp("\${Weather}\${Rince}")
     assertTrue(result.isGood)
     assertEquals("waxwind", result.unwrap())
@@ -171,7 +171,7 @@ class Substitutor2Test {
       Returns a good result that contains the expected string
     """.describe()
 
-    val sub = Substitutor2.bashStyle(stampVars)
+    val sub = Substitutor.bashStyle(stampVars)
     val result = sub.safeStamp("Weather\${Weather} & Rince\${Rince}")
     assertTrue(result.isGood)
     assertEquals("Weatherwax & Rincewind", result.unwrap())
@@ -185,7 +185,7 @@ class Substitutor2Test {
       Returns a good result containing an empty string
     """.describe()
 
-    val sub = Substitutor2.bashStyle(stampVars)
+    val sub = Substitutor.bashStyle(stampVars)
     val result = sub.safeStamp("")
     assertTrue(result.isGood)
     assertEquals("", result.unwrap())
@@ -200,7 +200,7 @@ class Substitutor2Test {
     """.describe()
 
     val expected = "\n luggage \n"
-    val sub = Substitutor2.bashStyle(stampVars)
+    val sub = Substitutor.bashStyle(stampVars)
     val result = sub.safeStamp(expected)
     assertTrue(result.isGood)
     assertEquals(expected, result.unwrap())
@@ -215,7 +215,7 @@ class Substitutor2Test {
       Returns a bad result
     """.describe()
 
-    val sub = Substitutor2.bashStyle { null }
+    val sub = Substitutor.bashStyle { null }
     val result = sub.safeStamp("\${abc}")
     assertTrue(result.isBad)
   }
@@ -228,7 +228,7 @@ class Substitutor2Test {
       Returns a good result that contains the input with all occurrences replaced with the mapped value
     """.describe()
 
-    val sub = Substitutor2.bashStyle(stampVars)
+    val sub = Substitutor.bashStyle(stampVars)
     val result = sub.safeStamp("\${Rince}_\${Rince}_\${Rince}")
     assertTrue(result.isGood)
     assertEquals("wind_wind_wind", result.unwrap())
@@ -242,7 +242,7 @@ class Substitutor2Test {
       Returns a bad result
     """.describe()
 
-    val sub = Substitutor2("abc".toRegex(), 1, 0) { "" }
+    val sub = Substitutor("abc".toRegex(), 1, 0) { "" }
     val result = sub.safeStamp("abc")
     assertTrue(result.isBad)
   }
@@ -255,7 +255,7 @@ class Substitutor2Test {
       Returns a bad result
     """.describe()
 
-    val sub = Substitutor2("abc".toRegex(), 0, 1) { "" }
+    val sub = Substitutor("abc".toRegex(), 0, 1) { "" }
     val result = sub.safeStamp("abc")
     assertTrue(result.isBad)
   }
