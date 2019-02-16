@@ -150,22 +150,14 @@ fun String.lineUp(delim: String = " "): String = when {
 /******************************************************************************
  * Removes empty lines from a list of strings
  *****************************************************************************/
-fun List<String>.stripBlanks(): List<String> = filterNot { it.isBlank() }
+fun List<String>.strip(): List<String> = filterNot { it.isBlank() }
 
 /******************************************************************************
  * Removes empty lines from the start and end of a list of strings
  *****************************************************************************/
-fun List<String>.trimBlanks(): List<String> = trimStart().trimEnd()
-
-/******************************************************************************
- * Removes empty lines from the start of a list of strings
- *****************************************************************************/
-fun List<String>.trimStart(): List<String> = dropWhile { it.isBlank() }
-
-/******************************************************************************
- * Removes empty lines from the end of a list of strings
- *****************************************************************************/
-fun List<String>.trimEnd(): List<String> = dropLastWhile { it.isBlank() }
+fun List<String>.trim(): List<String>
+  = dropWhile { it.isBlank() }
+  .dropLastWhile { it.isBlank() }
 
 /******************************************************************************
  * Returns the index of the first string to match the specified regular
