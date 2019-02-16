@@ -583,23 +583,72 @@ class AnyTest {
   }
 
   @Test
-  fun List_T_onEachExceptFirst___1() {
-    val actual = mutableListOf<String>()
-    listOf("a", "b", "c").onEachExceptFirst { actual.add(it) }
-    assertEquals(listOf("b", "c"), actual)
+  fun List_T_onLast___1() {
+    val actual = AtomicBoolean(false)
+    listOf("a", "b", "c").onLast { actual.set(true) }
+    assertTrue(actual.get())
   }
 
   @Test
-  fun List_T_onEachExceptFirst___2() {
+  fun List_T_onLast___2() {
+    val actual = AtomicBoolean(false)
+    listOf("a").onLast { actual.set(true) }
+    assertTrue(actual.get())
+  }
+
+  @Test
+  fun List_T_onLast___3() {
+    val actual = AtomicBoolean(true)
+    listOf<String>().onLast { actual.set(false) }
+    assertTrue(actual.get())
+  }
+
+  @Test
+  fun List_T_onEachExcept___1() {
     val actual = mutableListOf<String>()
-    listOf("a").onEachExceptFirst { actual.add(it) }
+    listOf("a", "b", "c").onEachExcept { actual.add(it) }
+    assertEquals(listOf("a", "b", "c"), actual)
+  }
+
+  @Test
+  fun List_T_onEachExcept___2() {
+    val actual = mutableListOf<String>()
+    listOf("a").onEachExcept { actual.add(it) }
+    assertEquals(listOf("a"), actual)
+  }
+
+  @Test
+  fun List_T_onEachExcept___3() {
+    val actual = mutableListOf<String>()
+    listOf<String>().onEachExcept { actual.add(it) }
     assertTrue(actual.isEmpty())
   }
 
   @Test
-  fun List_T_onEachExceptFirst___3() {
+  fun List_T_onEachExcept___4() {
     val actual = mutableListOf<String>()
-    listOf<String>().onEachExceptFirst { actual.add(it) }
+    listOf("a", "b", "c").onEachExcept(true) { actual.add(it) }
+    assertEquals(listOf("b", "c"), actual)
+  }
+
+  @Test
+  fun List_T_onEachExcept___5() {
+    val actual = mutableListOf<String>()
+    listOf("a", "b", "c").onEachExcept(false, true) { actual.add(it) }
+    assertEquals(listOf("a", "b"), actual)
+  }
+
+  @Test
+  fun List_T_onEachExcept___6() {
+    val actual = mutableListOf<String>()
+    listOf("a", "b", "c").onEachExcept(true, true) { actual.add(it) }
+    assertEquals(listOf("b"), actual)
+  }
+
+  @Test
+  fun List_T_onEachExcept___7() {
+    val actual = mutableListOf<String>()
+    listOf("a").onEachExcept(true, true) { actual.add(it) }
     assertTrue(actual.isEmpty())
   }
 

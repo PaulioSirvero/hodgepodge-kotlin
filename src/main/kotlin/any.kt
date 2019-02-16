@@ -16,7 +16,7 @@ fun String.describe() {
   lineUp("\n")
     .split("\n")
     .onFirst { println(it) }
-    .onEachExceptFirst {
+    .onEachExcept(true) {
       println("\t$it")
     }
   println()
@@ -87,10 +87,9 @@ fun String.bifurcate(delim: String): Pair<String, String?>
  *
  * @param[regex] Regular expression to split on
  *****************************************************************************/
-fun String.bifurcate(regex: Regex): Pair<String, String?> = let {
-  split(regex, 2).let { p ->
-    Pair(p[0], p.getOrNull(1))
-  }
+fun String.bifurcate(regex: Regex): Pair<String, String?> {
+  val p = split(regex, 2)
+  return Pair(p[0], p.getOrNull(1))
 }
 
 /******************************************************************************
@@ -276,23 +275,46 @@ fun Path.fileToSha512(
  * Invokes the supplied function on the first item if it has one and returns
  * the list unchanged
  *
- * @param[f] Function to invoke in the first element
+ * @param[f] Function to invoke on the first item
  *****************************************************************************/
 inline fun <T> List<T>.onFirst(f: (T) -> Unit): List<T> {
-  if (size > 0) f(this[0])
+  if (size > 0) f(first())
   return this
 }
 
 /******************************************************************************
- * Invokes the supplied function on the each item except the first as long as
- * more than one item is present then returns the list unchanged
+ * Invokes the supplied function on the last item if it has one and returns
+ * the list unchanged
  *
+ * @param[f] Function to invoke on the last item
+ *****************************************************************************/
+inline fun <T> List<T>.onLast(f: (T) -> Unit): List<T> {
+  if (size > 0) f(last())
+  return this
+}
+
+/******************************************************************************
+ * Invokes the supplied function on the each item except maybe the first or
+ * last, dependent on parameters, then returns the list unchanged
+ *
+ * @param[first] True if the first item should not be passed to the function
+ * @param[last] True if the last item should not be passed to the function
  * @param[f] Function to invoke in the each item except the first
  *****************************************************************************/
-inline fun <T> List<T>.onEachExceptFirst(f: (T) -> Unit): List<T> {
-  for(i in 1 until size) {
+inline fun <T> List<T>.onEachExcept(
+  first: Boolean = false,
+  last: Boolean = false,
+  f: (T) -> Unit
+): List<T> {
+  val start = if (first) 1 else 0
+  val end = if (last) size-1 else size
+
+  if(start >= end) return this
+
+  for(i in start until end) {
     f(this[i])
   }
+
   return this
 }
 
