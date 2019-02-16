@@ -111,12 +111,26 @@ class Substitutor2Test {
   fun stamp___8() {
     """
       ...stamp___8()
-      When given a regex that doesn't contain an explicit group
+      When given a regex that doesn't contain the specified replacement group
       Throws an exception
     """.describe()
 
     assertFails {
-      val sub = Substitutor2("abc".toRegex()) { "" }
+      val sub = Substitutor2("abc".toRegex(), 1, 0) { "" }
+      sub.stamp("abc")
+    }
+  }
+
+  @Test
+  fun stamp___9() {
+    """
+      ...stamp___9()
+      When given a regex that doesn't contain the specified key group
+      Throws an exception
+    """.describe()
+
+    assertFails {
+      val sub = Substitutor2("abc".toRegex(), 0, 1) { "" }
       sub.stamp("abc")
     }
   }
@@ -224,11 +238,24 @@ class Substitutor2Test {
   fun safeStamp___8() {
     """
       ...safeStamp___8()
-      When given a regex that doesn't contain an explicit group
+      When given a regex that doesn't contain the specified replacement group
       Returns a bad result
     """.describe()
 
-    val sub = Substitutor2("abc".toRegex()) { "" }
+    val sub = Substitutor2("abc".toRegex(), 1, 0) { "" }
+    val result = sub.safeStamp("abc")
+    assertTrue(result.isBad)
+  }
+
+  @Test
+  fun safeStamp___9() {
+    """
+      ...safeStamp___9()
+      When given a regex that doesn't contain the specified key group
+      Returns a bad result
+    """.describe()
+
+    val sub = Substitutor2("abc".toRegex(), 0, 1) { "" }
     val result = sub.safeStamp("abc")
     assertTrue(result.isBad)
   }
