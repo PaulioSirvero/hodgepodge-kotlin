@@ -174,4 +174,70 @@ class tuplesTest {
     val actual = Triple(1,2,3).contains(4)
     assertFalse(actual)
   }
+
+  @Test
+  fun triple_map___1() {
+    val actual = Triple(1,2,3).map {
+      Triple(first+3, second+3, third+3)
+    }
+    val expected = Triple(4,5,6)
+    assertEquals(expected, actual)
+  }
+
+  @Test
+  fun triple_dropFirst___1() {
+    val actual = Triple(1,2,3).dropFirst()
+    assertEquals(2 to 3, actual)
+  }
+
+  @Test
+  fun triple_dropSecond___1() {
+    val actual = Triple(1,2,3).dropSecond()
+    assertEquals(1 to 3, actual)
+  }
+
+  @Test
+  fun triple_dropThird___1() {
+    val actual = Triple(1,2,3).dropThird()
+    assertEquals(1 to 2, actual)
+  }
+
+  @Test
+  fun triple_shrink___1() {
+    val actual = Triple(1,2,3).shrink {
+      first to second
+    }
+    assertEquals(1 to 2, actual)
+  }
+
+  @Test
+  fun triple_get___1() {
+    val actual = Triple(1, 2, 3).get(0)
+    assertEquals(1, actual)
+  }
+
+  @Test
+  fun triple_get___2() {
+    val actual = Triple(1, 2, 3)[2]
+    assertEquals(3, actual)
+  }
+
+  @Test
+  fun triple_get___3() {
+    assertFailsWith<IndexOutOfBoundsException> {
+      Triple(1,2,3)[3]
+    }
+  }
+
+  @Test
+  fun triple_toSet___1() {
+    val actual = Triple(1, 2, 3).toSet()
+    assertEquals(setOf(1,2,3), actual)
+  }
+
+  @Test
+  fun triple_join___1() {
+    val actual = Triple(1, 2, 3).join(":")
+    assertEquals("1:2:3", actual)
+  }
 }
