@@ -113,4 +113,65 @@ class tuplesTest {
       (1 to 2)[2]
     }
   }
+
+  @Test
+  fun pair_join___1() {
+    val actual = (1 to 2).join(":")
+    assertEquals("1:2", actual)
+  }
+
+  @Test
+  fun triple_reverse___1() {
+    val actual = Triple(1, 2,3).reverse()
+    assertEquals(3, actual.first)
+    assertEquals(2, actual.second)
+    assertEquals(1, actual.third)
+  }
+
+  @Test
+  fun triple_shiftLeft___1() {
+    val actual = Triple(1, 2,3).shiftLeft()
+    assertEquals(2, actual.first)
+    assertEquals(3, actual.second)
+    assertEquals(1, actual.third)
+  }
+
+  @Test
+  fun triple_shiftRight___1() {
+    val actual = Triple(1, 2,3).shiftRight()
+    assertEquals(3, actual.first)
+    assertEquals(1, actual.second)
+    assertEquals(2, actual.third)
+  }
+
+  @Test
+  fun triple_shuffle___1() {
+    val before = Triple(1, 2, 3)
+    for (i in 0..100) {
+      val after = before.shuffle()
+      if(after.first != 1) return
+    }
+    fail(
+      "Streak of 100 shuffles that result in no actual change is so tiny" +
+        " the function must be bugged"
+    )
+  }
+
+  @Test
+  fun triple_contains___1() {
+    val actual = Triple(1,2,3).contains(1)
+    assertTrue(actual)
+  }
+
+  @Test
+  fun triple_contains___2() {
+    val actual = Triple(1,2,3).contains(3)
+    assertTrue(actual)
+  }
+
+  @Test
+  fun triple_contains___3() {
+    val actual = Triple(1,2,3).contains(4)
+    assertFalse(actual)
+  }
 }

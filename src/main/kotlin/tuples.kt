@@ -98,87 +98,47 @@ infix operator fun <T> Pair<T, T>.get(
   )
 }
 
-/**
- * Replaces the first value with another
- *
- * @param[f] Transformation function
- *
- * @return New pair
- */
-inline fun <A, B, A2> Pair<A, B>.mapFirst(
-  f: (Pair<A, B>) -> A2
-): Pair<A2, B> = f(this) to second
-
-/**
- * Replaces the second value with another
- *
- * @param[f] Transformation function
- *
- * @return New pair
- */
-inline fun <A, B, B2> Pair<A, B>.mapSecond(
-  f: (Pair<A, B>) -> B2
-): Pair<A, B2> = first to f(this)
-
-/**
- * Converts this pair into a singleton map
- *
- * @return Singleton map
- */
-fun <A, B> Pair<A, B>.toMap(): Map<A, B> = mapOf(this)
-
-/**
- * Joins the pair into a string with a user supplied
- * delimiter between them
+/******************************************************************************
+ * Joins the pair into a string with a user supplied delimiter, an empty string
+ * is used by default
  *
  * @param[delimiter] Delimiter to join with
- *
- * @return Joined values
- */
-fun <A, B> Pair<A, B>.join(delimiter: String): String
+ *****************************************************************************/
+fun <A, B> Pair<A, B>.join(delimiter: String = ""): String
   = "$first$delimiter$second"
 
-/**
- * Reverse the members so first swaps with third
- *
- * @return New triple
- */
+/******************************************************************************
+ * Reverse the order of the members
+ *****************************************************************************/
 fun <A, B, C> Triple<A, B, C>.reverse(): Triple<C, B, A>
   = Triple(third, second, first)
 
-/**
- * Shifts all values one member to the left
- *
- * @return New triple
- */
+/******************************************************************************
+ * Shifts all values to the left with the left most item becoming the last item
+ *****************************************************************************/
 fun <A, B, C> Triple<A, B, C>.shiftLeft(): Triple<B, C, A>
   = Triple(second, third, first)
 
-/**
- * Shifts all values one member to the right
- *
- * @return New triple
- */
+/******************************************************************************
+ * Shifts all values to the right with the right most item becoming the first
+ * item
+ *****************************************************************************/
 fun <A, B, C> Triple<A, B, C>.shiftRight(): Triple<C, A, B>
   = Triple(third, first, second)
 
-/**
+/******************************************************************************
  * Randomly shuffles the members
- *
- * @return New Triple
- */
+ *****************************************************************************/
 fun <T> Triple<T, T, T>.shuffle(): Triple<T, T, T>
   = toList().shuffled().let {
   Triple(it[0], it[1], it[2])
 }
 
-/**
+/******************************************************************************
  * Returns true if `value in triple`
  *
  * @param[value] Value to check for
- *
- * @return True if value is in the triple
- */
+ *****************************************************************************/
 infix operator fun <T> Triple<T, T, T>.contains(value: T): Boolean
   = (value == first) or (value == second) or (value == third)
 
