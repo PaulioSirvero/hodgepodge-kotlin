@@ -32,20 +32,20 @@ inline fun <A, B, A2, B2> Pair<A, B>.map(
 /******************************************************************************
  * Appends another value to the pair to form a [Triple]
  *
+ * @param[item] Value to insert at the end
+ *****************************************************************************/
+infix operator fun <A, B, C> Pair<A, B>.plus(
+  item: C
+): Triple<A, B, C> = Triple(first, second, item)
+
+/******************************************************************************
+ * Appends another value to the pair to form a [Triple]
+ *
  * @param[f] Supplier function
  *****************************************************************************/
 inline operator fun <A, B, C> Pair<A, B>.plus(
   f: Pair<A, B>.() -> C
 ): Triple<A, B, C> = Triple(first, second, f(this))
-
-/******************************************************************************
- * Appends another value to the pair to form a [Triple]
- *
- * @param[third] Value to grow with
- *****************************************************************************/
-infix operator fun <A, B, C> Pair<A, B>.plus(
-  third: C
-): Triple<A, B, C> = Triple(first, second, third)
 
 /******************************************************************************
  * Transforms a pair into a [Triple] by inserting a value into the center
@@ -59,55 +59,43 @@ fun <A, B, C> Pair<A, C>.midsert(
 /******************************************************************************
  * Transforms a pair into a [Triple] by inserting a value into the center
  *
- * @param[mid] Value to grow with
+ * @param[item] Value to insert in the middle
  *****************************************************************************/
 fun <A, B, C> Pair<A, C>.midsert(
-  mid: B
-): Triple<A, B, C> = Triple(first, mid, second)
+  item: B
+): Triple<A, B, C> = Triple(first, item, second)
 
-/**
+/******************************************************************************
  * Transforms a pair into a [Triple] by prepending a value
  *
- * @param[prefix] Value to grow with
- *
- * @return New triple
- */
-infix fun <A, B, C> Pair<B, C>.prepend(
-  prefix: A
-): Triple<A, B, C> = Triple(
-  prefix, first, second
-)
+ * @param[item] Value to insert at the front
+ *****************************************************************************/
+fun <A, B, C> Pair<B, C>.insert(
+  item: A
+): Triple<A, B, C> = Triple(item, first, second)
 
-/**
- * Sets a value from the pair by index
+/******************************************************************************
+ * Transforms a pair into a [Triple] by prepending a value
  *
- * @param[index] Index of the value to set
- *
- * @return New pair
- */
-operator fun <T> Pair<T, T>.set(
-  index: Int, value: T
-): Pair<T, T> = when (index) {
-  0 -> value to second
-  1 -> first to value
-  else -> throw IndexOutOfBoundsException(
-    "Pairs have fixed length of two, only 0 or 1 may be used to reference by index")
-}
+ * @param[f] Supplier function
+ *****************************************************************************/
+fun <A, B, C> Pair<B, C>.insert(
+  f: Pair<B, C>.() -> A
+): Triple<A, B, C> = Triple(f(), first, second)
 
-/**
+/******************************************************************************
  * Returns a value from the pair by index
  *
  * @param[index] Index of the value to get
- *
- * @return Referenced value
- */
+ *****************************************************************************/
 infix operator fun <T> Pair<T, T>.get(
   index: Int
 ): T = when (index) {
   0 -> first
   1 -> second
   else -> throw IndexOutOfBoundsException(
-    "Pairs have fixed length of two, only 0 or 1 may be used to reference by index")
+    "Pairs have a size of two, only 0 or 1 may be used as indexes"
+  )
 }
 
 /**

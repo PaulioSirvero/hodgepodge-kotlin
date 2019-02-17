@@ -1,8 +1,6 @@
 import org.junit.jupiter.api.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
-import kotlin.test.fail
+import java.lang.IndexOutOfBoundsException
+import kotlin.test.*
 
 class tuplesTest {
 
@@ -75,9 +73,44 @@ class tuplesTest {
 
   @Test
   fun pair_midsert___2() {
-    val actual = (1 to 3).midsert { 2 }
+    val actual = (1 to 3).midsert { first + 1 }
     assertEquals(1, actual.first)
     assertEquals(2, actual.second)
     assertEquals(3, actual.third)
+  }
+
+  @Test
+  fun pair_insert___1() {
+    val actual = (2 to 3).insert(1)
+    assertEquals(1, actual.first)
+    assertEquals(2, actual.second)
+    assertEquals(3, actual.third)
+  }
+
+  @Test
+  fun pair_insert___2() {
+    val actual = (2 to 3).insert { first - 1 }
+    assertEquals(1, actual.first)
+    assertEquals(2, actual.second)
+    assertEquals(3, actual.third)
+  }
+
+  @Test
+  fun pair_get___1() {
+    val actual = (1 to 2).get(0)
+    assertEquals(1, actual)
+  }
+
+  @Test
+  fun pair_get___2() {
+    val actual = (1 to 2)[1]
+    assertEquals(2, actual)
+  }
+
+  @Test
+  fun pair_get___3() {
+    assertFailsWith<IndexOutOfBoundsException> {
+      (1 to 2)[2]
+    }
   }
 }
