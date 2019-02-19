@@ -16,9 +16,7 @@ fun String.describe() {
   lineUp("\n")
     .split("\n")
     .onFirst { println(it) }
-    .onEachExcept(true) {
-      println("\t$it")
-    }
+    .onEachExcept(true) { println("\t$it") }
   println()
 }
 

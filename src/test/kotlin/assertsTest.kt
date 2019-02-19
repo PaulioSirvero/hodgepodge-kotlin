@@ -290,4 +290,76 @@ class AssertsTest {
       1.assertGreaterThanOrEqual(2, "Should throw")
     }
   }
+
+  @Test
+  fun Int_assertEven___1() {
+    0.assertEven("Should not throw")
+  }
+
+  @Test
+  fun Int_assertEven___2() {
+    assertFailsWith<FailedAssert> {
+      1.assertEven("Should throw")
+    }
+  }
+
+  @Test
+  fun Int_assertEven___3() {
+    2.assertEven("Should not throw")
+  }
+
+  @Test
+  fun Int_assertOdd___1() {
+    assertFailsWith<FailedAssert> {
+      0.assertOdd("Should throw")
+    }
+  }
+
+  @Test
+  fun Int_assertOdd___2() {
+    1.assertOdd("Should not throw")
+  }
+
+  @Test
+  fun Int_assertOdd___3() {
+    assertFailsWith<FailedAssert> {
+      2.assertOdd("Should throw")
+    }
+  }
+
+  @Test
+  fun Long_assertEven___1() {
+    0L.assertEven("Should not throw")
+  }
+
+  @Test
+  fun Long_assertEven___2() {
+    assertFailsWith<FailedAssert> {
+      1L.assertEven("Should throw")
+    }
+  }
+
+  @Test
+  fun Long_assertEven___3() {
+    2L.assertEven("Should not throw")
+  }
+
+  @Test
+  fun Long_assertOdd___1() {
+    assertFailsWith<FailedAssert> {
+      0L.assertOdd("Should throw")
+    }
+  }
+
+  @Test
+  fun Long_assertOdd___2() {
+    1L.assertOdd("Should not throw")
+  }
+
+  @Test
+  fun Long_assertOdd___3() {
+    assertFailsWith<FailedAssert> {
+      2L.assertOdd("Should throw")
+    }
+  }
 }

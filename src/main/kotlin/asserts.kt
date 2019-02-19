@@ -249,3 +249,47 @@ fun Number.assertGreaterThanOrEqual(
   this.toDouble() < other.toDouble() -> throw FailedAssert(errorMessage)
   else -> this
 }
+
+/******************************************************************************
+ * Asserts the integer is even throwing an exception if not. Always returns the
+ * value unmodified
+ *
+ * @param[errorMessage] Message to initialise any error messages with
+ *****************************************************************************/
+fun Int.assertEven(errorMessage: String): Int = when {
+  this % 2 == 0 -> this
+  else -> throw FailedAssert(errorMessage)
+}
+
+/******************************************************************************
+ * Asserts the integer is odd throwing an exception if not. Always returns the
+ * value unmodified
+ *
+ * @param[errorMessage] Message to initialise any error messages with
+ *****************************************************************************/
+fun Int.assertOdd(errorMessage: String): Int = when {
+  this % 2 == 0 -> throw FailedAssert(errorMessage)
+  else -> this
+}
+
+/******************************************************************************
+ * Asserts the long is even throwing an exception if not. Always returns the
+ * value unmodified
+ *
+ * @param[errorMessage] Message to initialise any error messages with
+ *****************************************************************************/
+fun Long.assertEven(errorMessage: String): Long = when {
+  this % 2 == 0L -> this
+  else -> throw FailedAssert(errorMessage)
+}
+
+/******************************************************************************
+ * Asserts the long is odd throwing an exception if not. Always returns the
+ * value unmodified
+ *
+ * @param[errorMessage] Message to initialise any error messages with
+ *****************************************************************************/
+fun Long.assertOdd(errorMessage: String): Long = when {
+  this % 2 == 0L -> throw FailedAssert(errorMessage)
+  else -> this
+}
