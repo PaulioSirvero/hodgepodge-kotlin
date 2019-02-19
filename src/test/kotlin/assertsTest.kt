@@ -1,5 +1,4 @@
 import org.junit.jupiter.api.Test
-import kotlin.test.assertFails
 import kotlin.test.assertFailsWith
 
 class AssertsTest {
