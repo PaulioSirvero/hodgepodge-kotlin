@@ -1,7 +1,7 @@
 import org.junit.jupiter.api.Test
 import kotlin.test.assertFailsWith
 
-class AssertsTest {
+class VerifyTest {
 
   @Test
   fun T_verifyNotNull___1() {
