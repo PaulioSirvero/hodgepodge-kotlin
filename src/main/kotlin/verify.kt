@@ -90,6 +90,18 @@ fun <C, V> C.verifyNotEmpty(errorMessage: String): C
 }
 
 /******************************************************************************
+ * Asserts the collection is empty throwing an exception if it is. Always
+ * returns the value unmodified
+ *
+ * @param[errorMessage] Message to initialise any error messages with
+ *****************************************************************************/
+fun <C, V> C.verifyEmpty(errorMessage: String): C
+  where C: Collection<V> = when {
+  this.isNotEmpty() -> throw FailedVerification(errorMessage)
+  else -> this
+}
+
+/******************************************************************************
  * Asserts the collection is of a specified size throwing an exception if it is
  * not. Always returns the value unmodified
  *
@@ -130,6 +142,17 @@ fun <C, V> C.verifyNoDuplicates(errorMessage: String): C
  *****************************************************************************/
 fun <K,V> Map<K,V>.verifyNotEmpty(errorMessage: String): Map<K,V> = when {
   this.isEmpty() -> throw FailedVerification(errorMessage)
+  else -> this
+}
+
+/******************************************************************************
+ * Asserts the map is empty throwing an exception if it is. Always returns the
+ * value unmodified
+ *
+ * @param[errorMessage] Message to initialise any error messages with
+ *****************************************************************************/
+fun <K,V> Map<K,V>.verifyEmpty(errorMessage: String): Map<K,V> = when {
+  this.isNotEmpty() -> throw FailedVerification(errorMessage)
   else -> this
 }
 
@@ -329,7 +352,7 @@ fun Long.verifyDivisibleBy(divisor: Long, errorMessage: String): Long = when {
 }
 
 /******************************************************************************
- * Asserts this object is equals to the other throwing an exception if not.
+ * Asserts this object is equal to the other throwing an exception if not.
  * Always returns this value
  *
  * @param[other] Other instance
@@ -337,6 +360,18 @@ fun Long.verifyDivisibleBy(divisor: Long, errorMessage: String): Long = when {
  *****************************************************************************/
 fun <T> T.verifyEquals(other: T, errorMessage: String): T = when {
   this != other -> throw FailedVerification(errorMessage)
+  else -> this
+}
+
+/******************************************************************************
+ * Asserts this object is not equal to the other throwing an exception if not.
+ * Always returns this value
+ *
+ * @param[other] Other instance
+ * @param[errorMessage] Message to initialise any error messages with
+ *****************************************************************************/
+fun <T> T.verifyNotEquals(other: T, errorMessage: String): T = when {
+  this == other -> throw FailedVerification(errorMessage)
   else -> this
 }
 
@@ -349,5 +384,17 @@ fun <T> T.verifyEquals(other: T, errorMessage: String): T = when {
  *****************************************************************************/
 fun <T> T.verifySame(other: T, errorMessage: String): T = when {
   this !== other -> throw FailedVerification(errorMessage)
+  else -> this
+}
+
+/******************************************************************************
+ * Asserts this object is not the same as the other (reference check) throwing
+ * an exception if not. Always returns this value
+ *
+ * @param[other] Other instance
+ * @param[errorMessage] Message to initialise any error messages with
+ *****************************************************************************/
+fun <T> T.verifyNotSame(other: T, errorMessage: String): T = when {
+  this === other -> throw FailedVerification(errorMessage)
   else -> this
 }

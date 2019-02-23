@@ -88,6 +88,18 @@ class VerifyTest {
   }
 
   @Test
+  fun Collection_verifyEmpty___1() {
+    listOf<Any>().verifyEmpty("Should not throw")
+  }
+
+  @Test
+  fun Collection_verifyEmpty___2() {
+    assertFailsWith<FailedVerification> {
+      listOf(1,2,3).verifyEmpty("Should throw")
+    }
+  }
+
+  @Test
   fun Collection_verifyLength___1() {
     listOf(1,2,3).verifyLength(3, "Should not throw")
   }
@@ -132,6 +144,18 @@ class VerifyTest {
   fun Map_verifyNotEmpty___2() {
     assertFailsWith<FailedVerification> {
       mapOf<Any, Any>().verifyNotEmpty("Should throw")
+    }
+  }
+
+  @Test
+  fun Map_verifyEmpty___1() {
+    mapOf<Any, Any>().verifyEmpty("Should not throw")
+  }
+
+  @Test
+  fun Map_verifyEmpty___2() {
+    assertFailsWith<FailedVerification> {
+      mapOf(1 to "1", 2 to "2").verifyEmpty("Should throw")
     }
   }
 
@@ -432,6 +456,30 @@ class VerifyTest {
   }
 
   @Test
+  fun T_verifyNotEquals___1() {
+    val thisInput = "abc"
+    val otherInput = "efg"
+    thisInput.verifyNotEquals(otherInput, "Should not throw")
+  }
+
+  @Test
+  fun T_verifyNotEquals___2() {
+    val thisInput = String("abc".toCharArray())
+    val otherInput = String("abc".toCharArray())
+    assertFailsWith<FailedVerification> {
+      thisInput.verifyNotEquals(otherInput, "Should throw")
+    }
+  }
+
+  @Test
+  fun T_verifyNotEquals___3() {
+    val input = "abc"
+    assertFailsWith<FailedVerification> {
+      input.verifyNotEquals(input, "Should throw")
+    }
+  }
+
+  @Test
   fun T_verifySame___1() {
     val input = "abc"
     input.verifySame(input, "Should not throw")
@@ -452,6 +500,21 @@ class VerifyTest {
     val otherInput = "efg"
     assertFailsWith<FailedVerification> {
       thisInput.verifySame(otherInput, "Should throw")
+    }
+  }
+
+  @Test
+  fun T_verifyNotSame___1() {
+    val thisInput = String("abc".toCharArray())
+    val otherInput = String("abc".toCharArray())
+    thisInput.verifyNotSame(otherInput, "Should not throw")
+  }
+
+  @Test
+  fun T_verifyNotSame___2() {
+    val input = "abc"
+    assertFailsWith<FailedVerification> {
+      input.verifyNotSame(input, "Should throw")
     }
   }
 }
