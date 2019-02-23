@@ -5,7 +5,7 @@
  * @param[errorMessage] Message to initialise any error messages with
  * @param[cause] Root cause of the failed assertion if appropriate
  *****************************************************************************/
-class FailedAssert(
+class FailedVerification(
   errorMessage: String,
   cause: Throwable? = null
 ): Exception(errorMessage, cause)
@@ -16,9 +16,19 @@ class FailedAssert(
  *
  * @param[errorMessage] Message to initialise any error messages with
  *****************************************************************************/
-fun <T> T?.assertNotNull(errorMessage: String): T = when {
-  this == null -> throw FailedAssert(errorMessage)
+fun <T> T?.verifyNotNull(errorMessage: String): T = when {
+  this == null -> throw FailedVerification(errorMessage)
   else -> this
+}
+
+/******************************************************************************
+ * Asserts the value is null throwing an exception if it isn't
+ *
+ * @param[errorMessage] Message to initialise any error messages with
+ *****************************************************************************/
+fun <T> T?.verifyNull(errorMessage: String) = when {
+  this != null -> throw FailedVerification(errorMessage)
+  else -> Unit
 }
 
 /******************************************************************************
@@ -27,8 +37,8 @@ fun <T> T?.assertNotNull(errorMessage: String): T = when {
  *
  * @param[errorMessage] Message to initialise any error messages with
  *****************************************************************************/
-fun String.assertNotEmpty(errorMessage: String): String = when {
-  isEmpty() -> throw FailedAssert(errorMessage)
+fun String.verifyNotEmpty(errorMessage: String): String = when {
+  isEmpty() -> throw FailedVerification(errorMessage)
   else -> this
 }
 
@@ -38,8 +48,8 @@ fun String.assertNotEmpty(errorMessage: String): String = when {
  *
  * @param[errorMessage] Message to initialise any error messages with
  *****************************************************************************/
-fun String.assertNotBlank(errorMessage: String): String = when {
-  isBlank() -> throw FailedAssert(errorMessage)
+fun String.verifyNotBlank(errorMessage: String): String = when {
+  isBlank() -> throw FailedVerification(errorMessage)
   else -> this
 }
 
@@ -50,8 +60,8 @@ fun String.assertNotBlank(errorMessage: String): String = when {
  * @param[length] Length to assert
  * @param[errorMessage] Message to initialise any error messages with
  *****************************************************************************/
-fun String.assertLength(length: Int, errorMessage: String): String = when {
-  this.length != length -> throw FailedAssert(errorMessage)
+fun String.verifyLength(length: Int, errorMessage: String): String = when {
+  this.length != length -> throw FailedVerification(errorMessage)
   else -> this
 }
 
@@ -62,9 +72,9 @@ fun String.assertLength(length: Int, errorMessage: String): String = when {
  * @param[regex] Regex to match
  * @param[errorMessage] Message to initialise any error messages with
  *****************************************************************************/
-fun String.assertMatches(regex: Regex, errorMessage: String): String = when {
+fun String.verifyMatches(regex: Regex, errorMessage: String): String = when {
   matches(regex) -> this
-  else -> throw FailedAssert(errorMessage)
+  else -> throw FailedVerification(errorMessage)
 }
 
 /******************************************************************************
@@ -73,9 +83,9 @@ fun String.assertMatches(regex: Regex, errorMessage: String): String = when {
  *
  * @param[errorMessage] Message to initialise any error messages with
  *****************************************************************************/
-fun <C, V> C.assertNotEmpty(errorMessage: String): C
+fun <C, V> C.verifyNotEmpty(errorMessage: String): C
   where C: Collection<V> = when {
-  this.isEmpty() -> throw FailedAssert(errorMessage)
+  this.isEmpty() -> throw FailedVerification(errorMessage)
   else -> this
 }
 
@@ -86,9 +96,9 @@ fun <C, V> C.assertNotEmpty(errorMessage: String): C
  * @param[length] Length to assert
  * @param[errorMessage] Message to initialise any error messages with
  *****************************************************************************/
-fun <C, V> C.assertLength(length: Int, errorMessage: String): C
+fun <C, V> C.verifyLength(length: Int, errorMessage: String): C
   where C: Collection<V> = when {
-  this.size != length -> throw FailedAssert(errorMessage)
+  this.size != length -> throw FailedVerification(errorMessage)
   else -> this
 }
 
@@ -98,14 +108,14 @@ fun <C, V> C.assertLength(length: Int, errorMessage: String): C
  *
  * @param[errorMessage] Message to initialise any error messages with
  *****************************************************************************/
-fun <C, V> C.assertNoDuplicates(errorMessage: String): C
+fun <C, V> C.verifyNoDuplicates(errorMessage: String): C
   where C: Collection<V> {
   for ((outerIndex, outer) in this.withIndex()) {
     this.forEachIndexed { innerIndex, inner ->
       when {
         innerIndex == outerIndex -> return@forEachIndexed
-        outer == null && inner == null -> throw FailedAssert(errorMessage)
-        outer != null && outer == inner -> throw FailedAssert(errorMessage)
+        outer == null && inner == null -> throw FailedVerification(errorMessage)
+        outer != null && outer == inner -> throw FailedVerification(errorMessage)
       }
     }
   }
@@ -118,8 +128,8 @@ fun <C, V> C.assertNoDuplicates(errorMessage: String): C
  *
  * @param[errorMessage] Message to initialise any error messages with
  *****************************************************************************/
-fun <K,V> Map<K,V>.assertNotEmpty(errorMessage: String): Map<K,V> = when {
-  this.isEmpty() -> throw FailedAssert(errorMessage)
+fun <K,V> Map<K,V>.verifyNotEmpty(errorMessage: String): Map<K,V> = when {
+  this.isEmpty() -> throw FailedVerification(errorMessage)
   else -> this
 }
 
@@ -130,11 +140,11 @@ fun <K,V> Map<K,V>.assertNotEmpty(errorMessage: String): Map<K,V> = when {
  * @param[length] Length to assert
  * @param[errorMessage] Message to initialise any error messages with
  *****************************************************************************/
-fun <K,V> Map<K,V>.assertLength(
+fun <K,V> Map<K,V>.verifyLength(
   length: Int,
   errorMessage: String
 ): Map<K,V> = when {
-  this.size != length -> throw FailedAssert(errorMessage)
+  this.size != length -> throw FailedVerification(errorMessage)
   else -> this
 }
 
@@ -144,8 +154,8 @@ fun <K,V> Map<K,V>.assertLength(
  *
  * @param[errorMessage] Message to initialise any error messages with
  *****************************************************************************/
-fun Number.assertZero(errorMessage: String): Number = when {
-  this.toDouble() != 0.0 -> throw FailedAssert(errorMessage)
+fun Number.verifyZero(errorMessage: String): Number = when {
+  this.toDouble() != 0.0 -> throw FailedVerification(errorMessage)
   else -> this
 }
 
@@ -155,8 +165,8 @@ fun Number.assertZero(errorMessage: String): Number = when {
  *
  * @param[errorMessage] Message to initialise any error messages with
  *****************************************************************************/
-fun Number.assertNotNegative(errorMessage: String): Number = when {
-  this.toDouble() < 0 -> throw FailedAssert(errorMessage)
+fun Number.verifyNotNegative(errorMessage: String): Number = when {
+  this.toDouble() < 0 -> throw FailedVerification(errorMessage)
   else -> this
 }
 
@@ -166,8 +176,8 @@ fun Number.assertNotNegative(errorMessage: String): Number = when {
  *
  * @param[errorMessage] Message to initialise any error messages with
  *****************************************************************************/
-fun Number.assertNotPositive(errorMessage: String): Number = when {
-  this.toDouble() > 0 -> throw FailedAssert(errorMessage)
+fun Number.verifyNotPositive(errorMessage: String): Number = when {
+  this.toDouble() > 0 -> throw FailedVerification(errorMessage)
   else -> this
 }
 
@@ -177,8 +187,8 @@ fun Number.assertNotPositive(errorMessage: String): Number = when {
  *
  * @param[errorMessage] Message to initialise any error messages with
  *****************************************************************************/
-fun Number.assertNegative(errorMessage: String): Number = when {
-  this.toDouble() >= 0  -> throw FailedAssert(errorMessage)
+fun Number.verifyNegative(errorMessage: String): Number = when {
+  this.toDouble() >= 0  -> throw FailedVerification(errorMessage)
   else -> this
 }
 
@@ -188,8 +198,8 @@ fun Number.assertNegative(errorMessage: String): Number = when {
  *
  * @param[errorMessage] Message to initialise any error messages with
  *****************************************************************************/
-fun Number.assertPositive(errorMessage: String): Number = when {
-  this.toDouble() <= 0 -> throw FailedAssert(errorMessage)
+fun Number.verifyPositive(errorMessage: String): Number = when {
+  this.toDouble() <= 0 -> throw FailedVerification(errorMessage)
   else -> this
 }
 
@@ -200,8 +210,8 @@ fun Number.assertPositive(errorMessage: String): Number = when {
  * @param[other] other number to compare to
  * @param[errorMessage] Message to initialise any error messages with
  *****************************************************************************/
-fun Number.assertLessThan(other: Number, errorMessage: String): Number = when {
-  this.toDouble() >= other.toDouble() -> throw FailedAssert(errorMessage)
+fun Number.verifyLessThan(other: Number, errorMessage: String): Number = when {
+  this.toDouble() >= other.toDouble() -> throw FailedVerification(errorMessage)
   else -> this
 }
 
@@ -212,11 +222,11 @@ fun Number.assertLessThan(other: Number, errorMessage: String): Number = when {
  * @param[other] other number to compare to
  * @param[errorMessage] Message to initialise any error messages with
  *****************************************************************************/
-fun Number.assertLessThanOrEqual(
+fun Number.verifyLessThanOrEqual(
   other: Number,
   errorMessage: String
 ): Number = when {
-  this.toDouble() > other.toDouble() -> throw FailedAssert(errorMessage)
+  this.toDouble() > other.toDouble() -> throw FailedVerification(errorMessage)
   else -> this
 }
 
@@ -227,11 +237,11 @@ fun Number.assertLessThanOrEqual(
  * @param[other] other number to compare to
  * @param[errorMessage] Message to initialise any error messages with
  *****************************************************************************/
-fun Number.assertGreaterThan(
+fun Number.verifyGreaterThan(
   other: Number,
   errorMessage: String
 ): Number = when {
-  this.toDouble() <= other.toDouble() -> throw FailedAssert(errorMessage)
+  this.toDouble() <= other.toDouble() -> throw FailedVerification(errorMessage)
   else -> this
 }
 
@@ -242,11 +252,11 @@ fun Number.assertGreaterThan(
  * @param[other] other number to compare to
  * @param[errorMessage] Message to initialise any error messages with
  *****************************************************************************/
-fun Number.assertGreaterThanOrEqual(
+fun Number.verifyGreaterThanOrEqual(
   other: Number,
   errorMessage: String
 ): Number = when {
-  this.toDouble() < other.toDouble() -> throw FailedAssert(errorMessage)
+  this.toDouble() < other.toDouble() -> throw FailedVerification(errorMessage)
   else -> this
 }
 
@@ -256,9 +266,9 @@ fun Number.assertGreaterThanOrEqual(
  *
  * @param[errorMessage] Message to initialise any error messages with
  *****************************************************************************/
-fun Int.assertEven(errorMessage: String): Int = when {
+fun Int.verifyEven(errorMessage: String): Int = when {
   this % 2 == 0 -> this
-  else -> throw FailedAssert(errorMessage)
+  else -> throw FailedVerification(errorMessage)
 }
 
 /******************************************************************************
@@ -267,8 +277,20 @@ fun Int.assertEven(errorMessage: String): Int = when {
  *
  * @param[errorMessage] Message to initialise any error messages with
  *****************************************************************************/
-fun Int.assertOdd(errorMessage: String): Int = when {
-  this % 2 == 0 -> throw FailedAssert(errorMessage)
+fun Int.verifyOdd(errorMessage: String): Int = when {
+  this % 2 == 0 -> throw FailedVerification(errorMessage)
+  else -> this
+}
+
+/******************************************************************************
+ * Asserts the int is divisible by the value provided throwing an exception if
+ * not. Always returns the value unmodified
+ *
+ * @param[divisor] Value to be divisible by
+ * @param[errorMessage] Message to initialise any error messages with
+ *****************************************************************************/
+fun Int.verifyDivisibleBy(divisor: Int, errorMessage: String): Int = when {
+  this % divisor != 0 -> throw FailedVerification(errorMessage)
   else -> this
 }
 
@@ -278,9 +300,9 @@ fun Int.assertOdd(errorMessage: String): Int = when {
  *
  * @param[errorMessage] Message to initialise any error messages with
  *****************************************************************************/
-fun Long.assertEven(errorMessage: String): Long = when {
+fun Long.verifyEven(errorMessage: String): Long = when {
   this % 2 == 0L -> this
-  else -> throw FailedAssert(errorMessage)
+  else -> throw FailedVerification(errorMessage)
 }
 
 /******************************************************************************
@@ -289,7 +311,43 @@ fun Long.assertEven(errorMessage: String): Long = when {
  *
  * @param[errorMessage] Message to initialise any error messages with
  *****************************************************************************/
-fun Long.assertOdd(errorMessage: String): Long = when {
-  this % 2 == 0L -> throw FailedAssert(errorMessage)
+fun Long.verifyOdd(errorMessage: String): Long = when {
+  this % 2 == 0L -> throw FailedVerification(errorMessage)
+  else -> this
+}
+
+/******************************************************************************
+ * Asserts the long is divisible by the value provided throwing an exception if
+ * not. Always returns the value unmodified
+ *
+ * @param[divisor] Value to be divisible by
+ * @param[errorMessage] Message to initialise any error messages with
+ *****************************************************************************/
+fun Long.verifyDivisibleBy(divisor: Long, errorMessage: String): Long = when {
+  this % divisor != 0L -> throw FailedVerification(errorMessage)
+  else -> this
+}
+
+/******************************************************************************
+ * Asserts this object is equals to the other throwing an exception if not.
+ * Always returns this value
+ *
+ * @param[other] Other instance
+ * @param[errorMessage] Message to initialise any error messages with
+ *****************************************************************************/
+fun <T> T.verifyEquals(other: T, errorMessage: String): T = when {
+  this != other -> throw FailedVerification(errorMessage)
+  else -> this
+}
+
+/******************************************************************************
+ * Asserts this object is the same as the other (reference check) throwing an
+ * exception if not. Always returns this value
+ *
+ * @param[other] Other instance
+ * @param[errorMessage] Message to initialise any error messages with
+ *****************************************************************************/
+fun <T> T.verifySame(other: T, errorMessage: String): T = when {
+  this !== other -> throw FailedVerification(errorMessage)
   else -> this
 }

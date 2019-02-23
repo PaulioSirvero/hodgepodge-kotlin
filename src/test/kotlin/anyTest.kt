@@ -1,4 +1,5 @@
 import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -124,7 +125,7 @@ class AnyTest {
   fun String_bifurcate___String___6() {
     val (ab, n) = "ab".bifurcate(",")
     assertEquals("ab", ab)
-    assertNull(n)
+    Assertions.assertNull(n)
   }
 
   @Test
@@ -171,7 +172,7 @@ class AnyTest {
   fun String_bifurcate___Regex___6() {
     val (ab, n) = "ab".bifurcate("\\n".toRegex())
     assertEquals("ab", ab)
-    assertNull(n)
+    Assertions.assertNull(n)
   }
 
   @Test
@@ -184,7 +185,7 @@ class AnyTest {
   @Test
   fun String_substring___Regex___2() {
     val actual = "abcd".substring("\\s+bc".toRegex())
-    assertNull(actual)
+    Assertions.assertNull(actual)
   }
 
   @Test
@@ -212,7 +213,7 @@ class AnyTest {
   @Test
   fun String_substring___Regex_Int___3() {
     val actual = "abcdefghijk".substring("xyz".toRegex())
-    assertNull(actual)
+    Assertions.assertNull(actual)
   }
 
   @Test
